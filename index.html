@@ -16,7 +16,6 @@
 <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
 
 <style>
-/* ====== جميع الـ CSS كما هو تماماً دون تغيير ====== */
 :root {
   --bg: #0f0f13;
   --bg2: #18181f;
@@ -118,7 +117,6 @@ body {
 .nav-item.active i { transform: scale(1.15); }
 .nav-item:active { background: var(--bg3); transform: scale(0.9); }
 
-/* بطاقة الترحيب */
 .home-hero {
   background: linear-gradient(135deg, var(--accent) 0%, #9c5cf5 100%);
   border-radius: var(--radius); padding: 22px 20px; color: #fff;
@@ -162,7 +160,6 @@ body {
 .stat-card-val { font-size: 20px; font-weight: 700; }
 .stat-card-lbl { font-size: 12px; color: var(--text3); }
 
-/* قائمة آخر ما درسته */
 .recent-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
 .recent-item {
   background: var(--bg2); border: 1px solid var(--border);
@@ -181,7 +178,7 @@ body {
 .recent-item-title { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .recent-item-sub { font-size: 12px; color: var(--text3); }
 
-/* المواد */
+/* مواد */
 .search-bar {
   background: var(--bg2); border: 1px solid var(--border);
   border-radius: 50px; padding: 10px 16px;
@@ -275,7 +272,6 @@ body {
 .branch-arrow { color: var(--text3); font-size: 14px; transition: transform 0.15s; }
 .branch-item:active .branch-arrow { transform: translateX(4px); }
 
-/* عرض الفرع */
 .branch-header-card {
   background: var(--bg2); border: 1px solid var(--border);
   border-radius: var(--radius); padding: 16px; margin-bottom: 16px;
@@ -392,7 +388,6 @@ body {
 .complete-btn.done { background: var(--green-light); color: var(--green); }
 .complete-btn.undone { background: var(--accent); color: #fff; }
 
-/* الجدول */
 .week-grid {
   display: grid; grid-template-columns: repeat(7,1fr);
   gap: 6px; margin-bottom: 16px;
@@ -474,7 +469,6 @@ body {
 .empty-state i { font-size: 48px; margin-bottom: 10px; display: block; }
 .empty-state p { font-size: 14px; }
 
-/* الإحصائيات */
 .stats-hero-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
 .stats-mini {
   background: var(--bg2); border: 1px solid var(--border);
@@ -528,7 +522,6 @@ body {
 .text-green { color: var(--green); }
 ::-webkit-scrollbar { width: 0; }
 
-/* النوافذ المنبثقة */
 .modal-overlay {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0,0,0,0.6); z-index: 1000;
@@ -741,7 +734,7 @@ function toggleTheme() {
 }
 applyTheme(currentTheme);
 
-// ========== DATA (Provisoire – à remplacer par tes vraies données) ==========
+// ========== DATA (Provisoire) ==========
 const STUDY_DATA = [
   {
     id: "cat-radiologie",
@@ -873,7 +866,7 @@ function todayKey() {
 }
 function subjMeta(id) { return SUBJ_META[id] || { icon: 'ri-book-line', color: '#6c63ff', bg: 'rgba(108,99,255,0.15)' }; }
 
-// ========== WEEKLY GOAL (inchangé) ==========
+// ========== WEEKLY GOAL ==========
 function getCurrentWeekMonday() {
   const now = new Date();
   const day = now.getDay();
@@ -922,7 +915,7 @@ function calcGoalProgress(goal) {
   return { done, total: partials.length, pct: partials.length ? Math.round((done / partials.length) * 100) : 0 };
 }
 
-// ========== ROUTER (inchangé) ==========
+// ========== ROUTER ==========
 let currentPage = 'home';
 let historyStack = [];
 function nav(page, push = true) {
@@ -952,7 +945,13 @@ function updateNav(page) {
   }
 }
 
-function showToast(msg) { /* ... */ }
+// ========== TOAST ==========
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
 
 // ========== RENDER ENGINE ==========
 function renderPage(page) {
@@ -972,13 +971,12 @@ function renderPage(page) {
   }
 }
 
-// ========== HOME (modifié pour inclure "Dernièrement étudié") ==========
+// ========== HOME ==========
 function renderHome() {
   const overall = calcOverallProgress();
   const r = 35, c = 2 * Math.PI * r;
   const offset = c - (overall.pct / 100) * c;
 
-  // الهدف الأسبوعي
   const weeklyGoal = getWeeklyGoal();
   let goalCard = '';
   if (weeklyGoal && weeklyGoal.partials.length) {
@@ -1017,7 +1015,6 @@ function renderHome() {
     </div>`;
   }
 
-  // الفروع التي تمت دراستها مؤخراً (آخر ما درسته)
   const prog = getProgress();
   const studiedBranchIds = new Set();
   getAllPartials().forEach(p => {
@@ -1093,9 +1090,593 @@ function renderHome() {
   </div>`;
 }
 
-// باقي الدوال (subjects, schedule, stats, branch view, modals) كما هي بالضبط من الإصدار الكامل السابق
-// ... (تم تضمينها كاملة في الرد السابق ولا حاجة لتكرارها هنا، تأكد من نسخ كل شيء)
+// ========== SUBJECTS ==========
+let searchQuery = '';
+const expandedSubjects = new Set();
+const expandedUnits = new Set();
 
+function renderSubjects() {
+  return `
+  <div class="page-inner">
+    <div class="search-bar">
+      <i class="ri-search-line"></i>
+      <input type="search" id="search-input" placeholder="Rechercher un module..." value="${escHtml(searchQuery)}" oninput="onSearchInput(this.value)" autocomplete="off" />
+    </div>
+    <div id="subjects-results"></div>
+  </div>`;
+}
+function onSearchInput(value) { searchQuery = value; updateSubjectsResults(); }
+function updateSubjectsResults() {
+  const container = document.getElementById('subjects-results');
+  if (!container) return;
+  const q = searchQuery.toLowerCase().trim();
+  if (q === '') {
+    container.innerHTML = STUDY_DATA.map(cat => renderCategory(cat)).join('');
+    restoreExpandState();
+  } else {
+    container.innerHTML = renderSearchResults(q);
+  }
+}
+function renderSearchResults(q) {
+  const branches = getAllBranches().filter(b => b.title.toLowerCase().includes(q) || b.subjectTitle.toLowerCase().includes(q));
+  if (!branches.length) return '<div class="empty-state"><i class="ri-search-line"></i><p>Aucun résultat</p></div>';
+  return branches.map(b => {
+    const meta = subjMeta(b.subjectId);
+    const doneCount = b.partials.filter(p => isCompleted(p.id)).length;
+    return `
+    <div class="subject-card" style="margin-bottom:8px">
+      <div class="subject-header" onclick="nav('branch:${b.id}')">
+        <div class="subject-icon" style="background:${meta.bg};color:${meta.color}"><i class="${meta.icon}"></i></div>
+        <div class="subject-info">
+          <div class="subject-name">${escHtml(b.title)}</div>
+          <div class="subject-progress">${escHtml(b.subjectTitle)} · ${doneCount}/${b.partials.length}</div>
+        </div>
+        <i class="ri-arrow-right-s-line" style="color:var(--text3)"></i>
+      </div>
+    </div>`;
+  }).join('');
+}
+function renderCategory(cat) {
+  const totalP = cat.subjects.reduce((s,subj)=>s+subj.units.reduce((s2,u)=>s2+u.lessons.reduce((s3,l)=>s3+l.branches.reduce((s4,b)=>s4+b.partials.length,0),0),0),0);
+  const doneP = cat.subjects.reduce((s,subj)=>s+subj.units.reduce((s2,u)=>s2+u.lessons.reduce((s3,l)=>s3+l.branches.reduce((s4,b)=>s4+b.partials.filter(p=>isCompleted(p.id)).length,0),0),0),0);
+  return `
+  <div class="category-block">
+    <div class="category-header">
+      <i class="ri-folder-line" style="font-size:20px"></i>
+      <span class="category-header-text">${escHtml(cat.title)}</span>
+      <span class="category-badge">${doneP}/${totalP}</span>
+    </div>
+    ${cat.subjects.map(subj => renderSubject(subj)).join('')}
+  </div>`;
+}
+function renderSubject(subj) {
+  const meta = subjMeta(subj.id);
+  const pct = calcSubjectProgress(subj.id);
+  const allP = subj.units.reduce((s,u)=>s+u.lessons.reduce((s2,l)=>s2+l.branches.reduce((s3,b)=>s3+b.partials.length,0),0),0);
+  const doneP = subj.units.reduce((s,u)=>s+u.lessons.reduce((s2,l)=>s2+l.branches.reduce((s3,b)=>s3+b.partials.filter(p=>isCompleted(p.id)).length,0),0),0);
+  return `
+  <div class="subject-card" data-subject-id="${subj.id}">
+    <div class="subject-header" onclick="toggleSubjectExpand('${subj.id}')">
+      <div class="subject-icon" style="background:${meta.bg};color:${meta.color}"><i class="${meta.icon}"></i></div>
+      <div class="subject-info">
+        <div class="subject-name">${escHtml(subj.title)}</div>
+        <div class="subject-progress">${doneP}/${allP} · ${pct}%</div>
+      </div>
+      <i class="ri-arrow-right-s-line subject-chevron" id="chevron-subj-${subj.id}"></i>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+    <div class="subject-body" id="body-subj-${subj.id}">
+      ${subj.units.map(unit => renderUnit(unit)).join('')}
+    </div>
+  </div>`;
+}
+function renderUnit(unit) {
+  return `
+  <div class="unit-block">
+    <div class="unit-header" onclick="toggleUnitExpand('${unit.id}')">
+      <i class="ri-arrow-right-s-line unit-chevron" id="chevron-unit-${unit.id}"></i>
+      <span class="unit-title">${escHtml(unit.title)}</span>
+    </div>
+    <div class="unit-body" id="body-unit-${unit.id}">
+      ${unit.lessons.map(lesson => `
+        <div class="lesson-item">
+          <div class="lesson-title"><i class="ri-book-2-line"></i>${escHtml(lesson.title)}</div>
+          ${lesson.branches.map(branch => {
+            const ps = branch.partials;
+            const done = ps.filter(p => isCompleted(p.id)).length;
+            const isDone = done === ps.length && ps.length > 0;
+            const isPartial = done > 0 && done < ps.length;
+            return `
+            <div class="branch-item" onclick="nav('branch:${branch.id}')">
+              <div class="branch-dot ${isDone?'done':isPartial?'partial':''}"></div>
+              <span class="branch-name">${escHtml(branch.title)}</span>
+              <span class="branch-count">${done}/${ps.length}</span>
+              <i class="ri-arrow-right-s-line branch-arrow"></i>
+            </div>`;
+          }).join('')}
+        </div>
+      `).join('')}
+    </div>
+  </div>`;
+}
+function toggleSubjectExpand(subjectId) {
+  const body = document.getElementById('body-subj-' + subjectId);
+  const chevron = document.getElementById('chevron-subj-' + subjectId);
+  if (!body) return;
+  if (body.classList.contains('open')) {
+    body.classList.remove('open');
+    if (chevron) chevron.classList.remove('open');
+    expandedSubjects.delete(subjectId);
+  } else {
+    body.classList.add('open');
+    if (chevron) chevron.classList.add('open');
+    expandedSubjects.add(subjectId);
+  }
+}
+function toggleUnitExpand(unitId) {
+  const body = document.getElementById('body-unit-' + unitId);
+  const chevron = document.getElementById('chevron-unit-' + unitId);
+  if (!body) return;
+  if (body.classList.contains('open')) {
+    body.classList.remove('open');
+    if (chevron) chevron.classList.remove('open');
+    expandedUnits.delete(unitId);
+  } else {
+    body.classList.add('open');
+    if (chevron) chevron.classList.add('open');
+    expandedUnits.add(unitId);
+  }
+}
+function restoreExpandState() {
+  expandedSubjects.forEach(id => {
+    const body = document.getElementById('body-subj-' + id);
+    const chevron = document.getElementById('chevron-subj-' + id);
+    if (body) body.classList.add('open');
+    if (chevron) chevron.classList.add('open');
+  });
+  expandedUnits.forEach(id => {
+    const body = document.getElementById('body-unit-' + id);
+    const chevron = document.getElementById('chevron-unit-' + id);
+    if (body) body.classList.add('open');
+    if (chevron) chevron.classList.add('open');
+  });
+}
+
+// ========== BRANCH VIEW ==========
+function renderBranch(branchId) {
+  const branch = findBranch(branchId);
+  if (!branch) return '<div class="page-inner"><p>Branche introuvable</p></div>';
+  const bp = calcBranchProgress(branchId);
+  return `
+  <div class="page-inner">
+    <div class="branch-header-card">
+      <div class="branch-breadcrumb">${escHtml(branch.catTitle)} / ${escHtml(branch.subjectTitle)} / ${escHtml(branch.unitTitle)} / ${escHtml(branch.lessonTitle)}</div>
+      <div class="branch-main-title">${escHtml(branch.title)}</div>
+      <div class="branch-progress-row">
+        <div class="branch-progress-bar"><div class="progress-bar-fill" style="width:${bp.pct}%"></div></div>
+        <span class="branch-progress-val">${bp.done}/${bp.total}</span>
+      </div>
+    </div>
+    <div class="partial-list">
+      ${branch.partials.map((p, i) => renderPartialCard(p, i)).join('')}
+    </div>
+  </div>`;
+}
+function renderPartialCard(p, i) {
+  const done = isCompleted(p.id);
+  const rc = getReviewCount(p.id);
+  return `
+  <div class="partial-card ${done?'completed':''}" id="pc-${p.id}">
+    <div class="partial-header" onclick="togglePartial('${p.id}')">
+      <div class="partial-check ${done?'done':''}" id="chk-${p.id}">${done ? '<i class="ri-check-line"></i>' : ''}</div>
+      <div class="partial-info">
+        <div class="partial-title">${escHtml(p.title)}</div>
+        <div class="partial-meta">
+          ${done ? `<span class="chip chip-green"><i class="ri-check-line"></i> Complété</span>` : '<span class="chip chip-accent"><i class="ri-time-line"></i> En cours</span>'}
+          ${rc > 0 ? `<span class="chip chip-yellow"><i class="ri-restart-line"></i> ${rc} révisions</span>` : ''}
+        </div>
+      </div>
+      <i class="ri-arrow-down-s-line" id="chevron-${p.id}" style="color:var(--text3);font-size:20px;transition:transform 0.2s"></i>
+    </div>
+    <div class="partial-body" id="pb-${p.id}">
+      <div class="tab-bar">
+        <button class="tab-btn active" id="tab-notes-${p.id}" onclick="switchTab('${p.id}','notes')"><i class="ri-file-text-line"></i> Notes</button>
+        <button class="tab-btn" id="tab-exercises-${p.id}" onclick="switchTab('${p.id}','exercises')"><i class="ri-todo-line"></i> Exercices</button>
+        <button class="tab-btn" id="tab-review-${p.id}" onclick="switchTab('${p.id}','review')"><i class="ri-restart-line"></i> Révision</button>
+      </div>
+      <div id="tab-content-${p.id}">${renderNotesTab(p.id)}</div>
+      <div class="complete-btn-wrap">
+        <button class="complete-btn ${done?'done':'undone'}" id="cbtn-${p.id}" onclick="toggleComplete('${p.id}')">
+          ${done ? '<i class="ri-checkbox-circle-fill"></i> Annuler' : '<i class="ri-checkbox-circle-line"></i> Marquer complété'}
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+function renderNotesTab(pid) {
+  const notes = getNotes(pid);
+  return `
+  <div class="content-area" id="notes-area-${pid}">
+    <textarea class="notes-textarea" id="notes-ta-${pid}" placeholder="Ajoutez vos notes...">${escHtml(notes)}</textarea>
+    <button class="save-notes-btn" onclick="saveNotes('${pid}')"><i class="ri-save-line"></i> Enregistrer</button>
+  </div>`;
+}
+function renderExercisesTab(pid) {
+  const exs = getExercises(pid);
+  return `
+  <div class="exercises-area" id="exs-area-${pid}">
+    ${exs.length ? exs.map((ex, i) => `
+    <div class="exercise-item" id="ex-${pid}-${i}">
+      <div class="exercise-check ${ex.done?'done':''}" onclick="toggleExercise('${pid}',${i})">${ex.done ? '<i class="ri-check-line"></i>' : ''}</div>
+      <div class="exercise-text" style="${ex.done?'text-decoration:line-through;opacity:0.5':''}">${escHtml(ex.text)}</div>
+      <button style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px" onclick="deleteExercise('${pid}',${i})"><i class="ri-delete-bin-line"></i></button>
+    </div>`).join('') : '<p style="font-size:13px;color:var(--text3);text-align:center;padding:16px">Aucun exercice</p>'}
+    <div class="add-exercise-row">
+      <input class="add-exercise-input" id="ex-input-${pid}" placeholder="Nouvel exercice..." onkeydown="if(event.key==='Enter')addExercise('${pid}')"/>
+      <button class="add-exercise-btn" onclick="addExercise('${pid}')"><i class="ri-add-line"></i></button>
+    </div>
+  </div>`;
+}
+function renderReviewTab(pid) {
+  const rc = getReviewCount(pid);
+  return `
+  <div class="review-section">
+    <div class="review-count">Révisions : <strong>${rc}</strong></div>
+    <button class="review-btn" onclick="addReview('${pid}')"><i class="ri-restart-line"></i> Ajouter une révision</button>
+  </div>`;
+}
+function togglePartial(pid) {
+  const body = document.getElementById('pb-' + pid);
+  const chevron = document.getElementById('chevron-' + pid);
+  if (!body) return;
+  const isOpen = body.classList.contains('open');
+  document.querySelectorAll('.partial-body.open').forEach(el => el.classList.remove('open'));
+  document.querySelectorAll('[id^="chevron-"]').forEach(el => el.style.transform = '');
+  if (!isOpen) {
+    body.classList.add('open');
+    if (chevron) chevron.style.transform = 'rotate(180deg)';
+  }
+}
+function switchTab(pid, tab) {
+  ['notes','exercises','review'].forEach(t => {
+    const btn = document.getElementById(`tab-${t}-${pid}`);
+    if (btn) btn.classList.toggle('active', t === tab);
+  });
+  const area = document.getElementById('tab-content-' + pid);
+  if (!area) return;
+  if (tab === 'notes') area.innerHTML = renderNotesTab(pid);
+  else if (tab === 'exercises') area.innerHTML = renderExercisesTab(pid);
+  else if (tab === 'review') area.innerHTML = renderReviewTab(pid);
+}
+function saveNotes(pid) {
+  const ta = document.getElementById('notes-ta-' + pid);
+  if (!ta) return;
+  setNotes(pid, ta.value);
+  showToast('Notes enregistrées');
+}
+function addExercise(pid) {
+  const input = document.getElementById('ex-input-' + pid);
+  if (!input || !input.value.trim()) return;
+  const exs = getExercises(pid);
+  exs.push({ text: input.value.trim(), done: false });
+  setExercises(pid, exs);
+  switchTab(pid, 'exercises');
+  showToast('Exercice ajouté');
+}
+function toggleExercise(pid, idx) {
+  const exs = getExercises(pid);
+  if (!exs[idx]) return;
+  exs[idx].done = !exs[idx].done;
+  setExercises(pid, exs);
+  switchTab(pid, 'exercises');
+}
+function deleteExercise(pid, idx) {
+  const exs = getExercises(pid);
+  exs.splice(idx, 1);
+  setExercises(pid, exs);
+  switchTab(pid, 'exercises');
+}
+function addReview(pid) {
+  const rc = getReviewCount(pid);
+  setPartialProgress(pid, { reviewCount: rc + 1 });
+  switchTab(pid, 'review');
+  showToast('Révision ajoutée');
+}
+function toggleComplete(pid) {
+  const done = isCompleted(pid);
+  const now = new Date().toISOString();
+  setPartialProgress(pid, { completed: !done, completedAt: !done ? now : undefined });
+  const card = document.getElementById('pc-' + pid);
+  const chk = document.getElementById('chk-' + pid);
+  const cbtn = document.getElementById('cbtn-' + pid);
+  if (card) card.classList.toggle('completed', !done);
+  if (chk) {
+    chk.className = 'partial-check ' + (!done ? 'done' : '');
+    chk.innerHTML = !done ? '<i class="ri-check-line"></i>' : '';
+  }
+  if (cbtn) {
+    cbtn.className = 'complete-btn ' + (!done ? 'done' : 'undone');
+    cbtn.innerHTML = !done ? '<i class="ri-checkbox-circle-fill"></i> Annuler' : '<i class="ri-checkbox-circle-line"></i> Marquer complété';
+  }
+  showToast(!done ? 'Marqué complété' : 'Annulé');
+  const act = LS.get(KEY_ACTIVITY, {});
+  const today = todayKey();
+  act[today] = (act[today] || 0) + 2;
+  LS.set(KEY_ACTIVITY, act);
+  updateGoalCardDisplay();
+}
+
+// ========== SCHEDULE ==========
+let selectedDay = todayKey();
+function renderSchedule() {
+  const today = new Date();
+  const dayNames = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  const schedule = LS.get(KEY_SCHEDULE, {});
+  const days = [];
+  for (let i = -3; i <= 3; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    days.push({ key, dayName: dayNames[d.getDay()], dayNum: d.getDate(), isToday: i === 0, hasSessions: !!(schedule[key] && schedule[key].length) });
+  }
+  const allSubjects = STUDY_DATA.flatMap(cat => cat.subjects);
+  const sessions = schedule[selectedDay] || [];
+  return `
+  <div class="page-inner">
+    <div class="section-title">Semaine en cours</div>
+    <div class="week-grid" id="week-grid">
+      ${days.map(d => `
+      <div class="day-cell ${d.isToday?'today':''} ${d.key===selectedDay?'active':''} ${d.hasSessions?'has-sessions':''}" onclick="selectDay('${d.key}')">
+        <div class="day-name">${d.dayName}</div>
+        <div class="day-num">${d.dayNum}</div>
+        <div class="day-dot"></div>
+      </div>`).join('')}
+    </div>
+    <div class="session-add-card">
+      <div class="session-add-title"><i class="ri-add-circle-line"></i> Ajouter une session</div>
+      <div class="session-add-row">
+        <select class="session-select" id="sess-subj">${allSubjects.map(s => `<option value="${s.id}">${s.title}</option>`).join('')}</select>
+        <input type="time" class="session-time-input" id="sess-time" value="09:00">
+        <input type="number" class="session-duration-input" id="sess-duration" placeholder="Heure" min="0.5" max="12" step="0.5" value="1" style="width:80px;">
+      </div>
+      <div style="margin-top:8px"><input type="text" class="add-exercise-input" id="sess-note" placeholder="Note optionnelle..." style="width:100%"></div>
+      <div style="margin-top:8px"><button class="session-add-submit" onclick="addSession()"><i class="ri-add-line"></i> Ajouter</button></div>
+    </div>
+    <div class="section-title">Sessions du jour</div>
+    <div class="sessions-container" id="sessions-cont">${renderSessionsList(sessions)}</div>
+  </div>`;
+}
+function renderSessionsList(sessions) {
+  if (!sessions.length) return '<div class="empty-state"><i class="ri-calendar-check-line"></i><p>Aucune session</p></div>';
+  return sessions.map((s, i) => {
+    const meta = subjMeta(s.subjectId);
+    const subj = STUDY_DATA.flatMap(c=>c.subjects).find(x=>x.id===s.subjectId);
+    return `
+    <div class="session-card ${s.completed?'completed':''}" id="session-${i}">
+      <div class="session-time-badge">${s.time}</div>
+      <div class="session-info">
+        <div class="session-subject" style="color:${meta.color}; ${s.completed?'text-decoration:line-through;opacity:0.7':''}">${subj ? escHtml(subj.title) : escHtml(s.subjectId)}</div>
+        ${s.duration ? `<div class="session-detail">⏱ ${s.duration}h</div>` : ''}
+        ${s.note ? `<div class="session-detail">${escHtml(s.note)}</div>` : ''}
+      </div>
+      <button class="session-complete-btn ${s.completed?'done':''}" onclick="toggleSessionComplete(${i})" title="${s.completed?'Annuler':'Terminé'}">
+        <i class="ri-lg ${s.completed?'ri-checkbox-circle-fill':'ri-checkbox-circle-line'}"></i>
+      </button>
+      <button class="session-del" onclick="deleteSession(${i})"><i class="ri-delete-bin-line"></i></button>
+    </div>`;
+  }).join('');
+}
+function selectDay(key) { selectedDay = key; document.getElementById('page-content').innerHTML = renderSchedule(); }
+function addSession() {
+  const subjEl = document.getElementById('sess-subj');
+  const timeEl = document.getElementById('sess-time');
+  const durationEl = document.getElementById('sess-duration');
+  const noteEl = document.getElementById('sess-note');
+  if (!subjEl || !timeEl) return;
+  const duration = durationEl ? parseFloat(durationEl.value) || 0 : 0;
+  const schedule = LS.get(KEY_SCHEDULE, {});
+  if (!schedule[selectedDay]) schedule[selectedDay] = [];
+  schedule[selectedDay].push({ subjectId: subjEl.value, time: timeEl.value, duration, note: noteEl ? noteEl.value : '', completed: false });
+  schedule[selectedDay].sort((a,b) => a.time.localeCompare(b.time));
+  LS.set(KEY_SCHEDULE, schedule);
+  document.getElementById('page-content').innerHTML = renderSchedule();
+  showToast('Session ajoutée');
+}
+function toggleSessionComplete(idx) {
+  const schedule = LS.get(KEY_SCHEDULE, {});
+  if (!schedule[selectedDay] || !schedule[selectedDay][idx]) return;
+  schedule[selectedDay][idx].completed = !schedule[selectedDay][idx].completed;
+  LS.set(KEY_SCHEDULE, schedule);
+  document.getElementById('page-content').innerHTML = renderSchedule();
+}
+function deleteSession(idx) {
+  const schedule = LS.get(KEY_SCHEDULE, {});
+  if (schedule[selectedDay]) { schedule[selectedDay].splice(idx, 1); LS.set(KEY_SCHEDULE, schedule); }
+  document.getElementById('page-content').innerHTML = renderSchedule();
+}
+
+// ========== STATS ==========
+function renderStats() {
+  const overall = calcOverallProgress();
+  const allSubjects = STUDY_DATA.flatMap(cat => cat.subjects);
+  const today = new Date();
+  const activity = LS.get(KEY_ACTIVITY, {});
+  const heatCells = [];
+  for (let i = 90; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const min = activity[key] || 0;
+    const lvl = min === 0 ? 0 : min < 30 ? 1 : min < 60 ? 2 : min < 120 ? 3 : 4;
+    heatCells.push(`<div class="heat-cell" data-lvl="${lvl}" title="${key}: ${Math.round(min)}min"></div>`);
+  }
+  return `
+  <div class="page-inner">
+    <div class="stats-hero-row">
+      <div class="stats-mini"><div class="stats-mini-val text-accent">${overall.pct}%</div><div class="stats-mini-lbl">Progression</div></div>
+      <div class="stats-mini"><div class="stats-mini-val text-green">${overall.done}</div><div class="stats-mini-lbl">Complétés</div></div>
+    </div>
+    <div class="section-title">Progression par module</div>
+    <div class="subjects-progress">
+      ${allSubjects.map(subj => {
+        const pct = calcSubjectProgress(subj.id);
+        const meta = subjMeta(subj.id);
+        const allP = subj.units.reduce((s,u)=>s+u.lessons.reduce((s2,l)=>s2+l.branches.reduce((s3,b)=>s3+b.partials.length,0),0),0);
+        const doneP = subj.units.reduce((s,u)=>s+u.lessons.reduce((s2,l)=>s2+l.branches.reduce((s3,b)=>s3+b.partials.filter(p=>isCompleted(p.id)).length,0),0),0);
+        return `
+        <div class="subj-progress-item">
+          <div class="subj-progress-top">
+            <span class="subj-progress-name"><i class="${meta.icon}" style="color:${meta.color};margin-right:6px"></i>${escHtml(subj.title)}</span>
+            <span class="subj-progress-pct">${pct}%</span>
+          </div>
+          <div class="progress-bar-wrap" style="height:8px;border-radius:4px"><div class="progress-bar-fill" style="width:${pct}%;background:${meta.color};border-radius:4px"></div></div>
+          <div style="font-size:11px;color:var(--text3);margin-top:4px">${doneP}/${allP}</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="section-title">Activité (91 jours)</div>
+    <div class="heatmap-grid">${heatCells.join('')}</div>
+    <div class="heatmap-legend">
+      <span>Moins</span>
+      <div class="heatmap-legend-cell" style="background:var(--bg3)"></div>
+      <div class="heatmap-legend-cell" data-lvl="1" style="background:rgba(108,99,255,0.25)"></div>
+      <div class="heatmap-legend-cell" data-lvl="2" style="background:rgba(108,99,255,0.5)"></div>
+      <div class="heatmap-legend-cell" data-lvl="3" style="background:rgba(108,99,255,0.75)"></div>
+      <div class="heatmap-legend-cell" data-lvl="4" style="background:var(--accent)"></div>
+      <span>Plus</span>
+    </div>
+  </div>`;
+}
+
+// ========== GOAL MODAL ==========
+let goalModalSearchQuery = '';
+function openGoalModal() {
+  document.getElementById('goal-modal').classList.add('open');
+  document.getElementById('goal-search-input').value = goalModalSearchQuery;
+  document.getElementById('goal-modal-results').innerHTML = renderGoalResults(getWeeklyGoal()?.partials || []);
+}
+function closeGoalModal() { document.getElementById('goal-modal').classList.remove('open'); }
+function onGoalModalSearch() {
+  goalModalSearchQuery = document.getElementById('goal-search-input').value;
+  document.getElementById('goal-modal-results').innerHTML = renderGoalResults(getWeeklyGoal()?.partials || []);
+}
+function renderGoalResults(selectedIds) {
+  const q = goalModalSearchQuery.toLowerCase().trim();
+  if (q) {
+    const matching = getAllPartials().filter(p => p.title.toLowerCase().includes(q));
+    if (!matching.length) return '<div class="empty-state"><i class="ri-search-line"></i><p>Aucun résultat</p></div>';
+    return '<div style="display:flex;flex-direction:column;gap:6px">' + matching.map(p => {
+      const checked = selectedIds.includes(p.id);
+      return `<label class="modal-partial-label"><div class="modal-partial-checkbox ${checked?'checked':''}">${checked?'<i class="ri-check-line"></i>':''}</div><input type="checkbox" value="${p.id}" ${checked?'checked':''} style="display:none" onchange="toggleGoalCheckbox(this)"><span class="modal-partial-title">${escHtml(p.title)}</span><span style="font-size:11px;color:var(--text3)">${escHtml(p.subjectTitle)}</span></label>`;
+    }).join('') + '</div>';
+  }
+  const subjectsMap = new Map();
+  getAllBranches().forEach(b => {
+    if (!subjectsMap.has(b.subjectId)) subjectsMap.set(b.subjectId, { subject: STUDY_DATA[0].subjects.find(s=>s.id===b.subjectId), branches: [] });
+    subjectsMap.get(b.subjectId).branches.push(b);
+  });
+  let html = '';
+  subjectsMap.forEach((val, subjId) => {
+    const meta = subjMeta(subjId);
+    html += `<div style="margin-bottom:8px">
+      <div class="modal-subject-header" onclick="toggleGoalSubject('${subjId}')">
+        <div class="modal-subject-icon" style="background:${meta.bg};color:${meta.color}"><i class="${meta.icon}"></i></div>
+        <div class="modal-subject-info"><div class="modal-subject-name">${escHtml(val.subject.title)}</div></div>
+        <i class="ri-arrow-right-s-line modal-subject-chevron" id="goal-chevron-${subjId}"></i>
+      </div>
+      <div class="modal-subject-body" id="goal-subject-body-${subjId}">${val.branches.map(b => {
+        return `<div class="modal-branch-row" onclick="toggleGoalBranch('${b.id}')"><span class="modal-branch-name">${escHtml(b.title)}</span><i class="ri-arrow-down-s-line modal-branch-chevron" id="goal-branch-chevron-${b.id}"></i></div>
+        <div class="modal-partials-list" id="goal-branch-partials-${b.id}">${b.partials.map(p => {
+          const checked = selectedIds.includes(p.id);
+          return `<label class="modal-partial-label"><div class="modal-partial-checkbox ${checked?'checked':''}">${checked?'<i class="ri-check-line"></i>':''}</div><input type="checkbox" value="${p.id}" ${checked?'checked':''} style="display:none" onchange="toggleGoalCheckbox(this)"><span class="modal-partial-title">${escHtml(p.title)}</span></label>`;
+        }).join('')}</div>`;
+      }).join('')}</div>
+    </div>`;
+  });
+  return html;
+}
+function toggleGoalSubject(id) {
+  const body = document.getElementById('goal-subject-body-'+id);
+  const chevron = document.getElementById('goal-chevron-'+id);
+  if (body) { body.classList.toggle('open'); chevron?.classList.toggle('open'); }
+}
+function toggleGoalBranch(id) {
+  const list = document.getElementById('goal-branch-partials-'+id);
+  const chevron = document.getElementById('goal-branch-chevron-'+id);
+  if (list) { list.classList.toggle('open'); chevron?.classList.toggle('open'); }
+}
+function toggleGoalCheckbox(el) {
+  const box = el.previousElementSibling;
+  box.classList.toggle('checked', el.checked);
+  box.innerHTML = el.checked ? '<i class="ri-check-line"></i>' : '';
+}
+function saveWeeklyGoalFromModal() {
+  const ids = [...document.querySelectorAll('#goal-modal-results input[type="checkbox"]:checked')].map(cb => cb.value);
+  if (!ids.length) { showToast('Sélectionnez au moins une partie'); return; }
+  saveWeeklyGoal(ids);
+  closeGoalModal();
+  document.getElementById('page-content').innerHTML = renderHome();
+  showToast('Objectif enregistré');
+}
+
+// ========== CHECKLIST ==========
+function openChecklistModal() {
+  document.getElementById('checklist-modal').classList.add('open');
+  renderChecklist();
+}
+function closeChecklistModal() { document.getElementById('checklist-modal').classList.remove('open'); updateGoalCardDisplay(); }
+function renderChecklist() {
+  const goal = getWeeklyGoal();
+  const body = document.getElementById('checklist-body');
+  if (!goal || !goal.partials.length) { body.innerHTML = '<p style="text-align:center;padding:20px">Aucune tâche</p>'; return; }
+  const allPartials = getAllPartials();
+  body.innerHTML = goal.partials.map(pid => {
+    const p = allPartials.find(pp => pp.id === pid);
+    if (!p) return '';
+    const done = isCompleted(pid);
+    return `<div class="checklist-item">
+      <div class="checklist-item-actions">
+        <div class="checklist-checkbox ${done?'checked':''}" onclick="toggleChecklistItem('${pid}')">${done?'<i class="ri-check-line" style="font-size:14px"></i>':''}</div>
+        <button class="checklist-delete-btn" onclick="removeChecklistItem('${pid}')"><i class="ri-delete-bin-line"></i></button>
+      </div>
+      <div class="checklist-item-title">${escHtml(p.title)}</div>
+      <div class="checklist-item-sub">${escHtml(p.subjectTitle)}</div>
+    </div>`;
+  }).join('');
+}
+function toggleChecklistItem(pid) { toggleComplete(pid); renderChecklist(); }
+function removeChecklistItem(pid) {
+  const goal = getWeeklyGoal();
+  if (!goal) return;
+  goal.partials = goal.partials.filter(id => id !== pid);
+  if (!goal.partials.length) { clearWeeklyGoal(); closeChecklistModal(); }
+  else LS.set(KEY_WEEKLY_GOAL, goal);
+  renderChecklist();
+  updateGoalCardDisplay();
+}
+function updateGoalCardDisplay() {
+  const card = document.getElementById('goal-card');
+  if (!card) return;
+  const goal = getWeeklyGoal();
+  if (!goal) { nav('home', false); return; }
+  const gp = calcGoalProgress(goal);
+  const gr = 30, gc = 2 * Math.PI * gr;
+  const goffset = gc - (gp.pct / 100) * gc;
+  const allDone = gp.done === gp.total && gp.total > 0;
+  const circleFill = document.getElementById('goal-circle-fill');
+  if (circleFill) { circleFill.setAttribute('stroke-dashoffset', goffset); circleFill.setAttribute('stroke', allDone ? 'var(--green)' : 'var(--accent)'); }
+  const pctSpan = document.getElementById('goal-pct');
+  if (pctSpan) pctSpan.textContent = gp.pct + '%';
+}
+
+function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ========== INIT ==========
+(function initGoalClear() {
+  const goal = LS.get(KEY_WEEKLY_GOAL, null);
+  if (goal && goal.weekMonday !== getWeekKey()) LS.set(KEY_WEEKLY_GOAL, null);
+})();
+nav('home', false);
 </script>
 </body>
 </html>
