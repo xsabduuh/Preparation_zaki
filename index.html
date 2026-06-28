@@ -637,6 +637,14 @@ body {
 .modal-partial-checkbox.checked { background: var(--accent); border-color: var(--accent); color: #fff; }
 .modal-partial-checkbox i { font-size: 12px; }
 .modal-partial-title { font-size: 13px; color: var(--text2); flex: 1; }
+
+/* إضافة زر حذف الفقرات المخصصة */
+.delete-partial-btn {
+  background: none; border: none; color: var(--text3);
+  font-size: 16px; cursor: pointer; padding: 2px 4px; margin-left: 4px;
+  transition: color 0.15s;
+}
+.delete-partial-btn:active { color: var(--red); transform: scale(0.9); }
 </style>
 </head>
 <body>
@@ -719,6 +727,7 @@ const KEY_TIMER = 'prep_timer';
 const KEY_SCHEDULE = 'prep_schedule';
 const KEY_THEME = 'prep_theme';
 const KEY_WEEKLY_GOAL = 'prep_weekly_goal';
+const KEY_CUSTOM_PARTIALS = 'prep_custom_partials';
 
 // ========== THEME ==========
 let currentTheme = LS.get(KEY_THEME, 'dark');
@@ -795,17 +804,43 @@ const SUBJ_META = {
   'subj-psychoSocio': { icon: 'ri-user-heart-line', color: '#be185d', bg: 'rgba(190,24,93,0.12)' }
 };
 
-// ========== HELPERS ==========
+// ========== CUSTOM PARTIALS ==========
+function getCustomPartials() { return LS.get(KEY_CUSTOM_PARTIALS, []); }
+function addCustomPartial(branchId, title) {
+  const customs = getCustomPartials();
+  const id = 'custom-' + Date.now() + '-' + Math.random().toString(36).substr(2,5);
+  customs.push({ id, branchId, title, createdAt: new Date().toISOString() });
+  LS.set(KEY_CUSTOM_PARTIALS, customs);
+  return id;
+}
+function deleteCustomPartial(id) {
+  const customs = getCustomPartials().filter(p => p.id !== id);
+  LS.set(KEY_CUSTOM_PARTIALS, customs);
+}
+
+// ========== HELPERS (updated to include custom partials) ==========
 function getAllPartials() {
-  const all = [];
+  const builtin = [];
   STUDY_DATA.forEach(cat => cat.subjects.forEach(subj =>
     subj.units.forEach(unit => unit.lessons.forEach(lesson =>
       lesson.branches.forEach(branch => branch.partials.forEach(p =>
-        all.push({ ...p, branchId: branch.id, branchTitle: branch.title, lessonTitle: lesson.title, unitTitle: unit.title, subjectTitle: subj.title, subjectId: subj.id, catTitle: cat.title })
+        builtin.push({ ...p, branchId: branch.id, branchTitle: branch.title, lessonTitle: lesson.title, unitTitle: unit.title, subjectTitle: subj.title, subjectId: subj.id, catTitle: cat.title })
       ))
     ))
   ));
-  return all;
+  const customs = getCustomPartials().map(p => {
+    const branch = findBranch(p.branchId);
+    return {
+      ...p,
+      branchTitle: branch ? branch.title : '',
+      lessonTitle: branch ? branch.lessonTitle : '',
+      unitTitle: branch ? branch.unitTitle : '',
+      subjectTitle: branch ? branch.subjectTitle : '',
+      subjectId: branch ? branch.subjectId : '',
+      catTitle: branch ? branch.catTitle : ''
+    };
+  });
+  return [...builtin, ...customs];
 }
 function getAllBranches() {
   const all = [];
@@ -819,7 +854,13 @@ function getAllBranches() {
   return all;
 }
 function findBranch(id) { return getAllBranches().find(b => b.id === id); }
-function getBranchPartials(branchId) { return getAllPartials().filter(p => p.branchId === branchId); }
+function getBranchPartials(branchId) {
+  const branch = findBranch(branchId);
+  if (!branch) return [];
+  const builtin = branch.partials ? branch.partials.map(p => ({ ...p, branchId })) : [];
+  const customs = getCustomPartials().filter(p => p.branchId === branchId).map(p => ({ ...p, branchId }));
+  return [...builtin, ...customs];
+}
 
 function getProgress() { return LS.get(KEY_PROGRESS, {}); }
 function setPartialProgress(pid, data) {
@@ -866,7 +907,7 @@ function todayKey() {
 }
 function subjMeta(id) { return SUBJ_META[id] || { icon: 'ri-book-line', color: '#6c63ff', bg: 'rgba(108,99,255,0.15)' }; }
 
-// ========== WEEKLY GOAL ==========
+// ========== WEEKLY GOAL (unchanged) ==========
 function getCurrentWeekMonday() {
   const now = new Date();
   const day = now.getDay();
@@ -971,7 +1012,7 @@ function renderPage(page) {
   }
 }
 
-// ========== HOME ==========
+// ========== HOME (unchanged except using merged partials) ==========
 function renderHome() {
   const overall = calcOverallProgress();
   const r = 35, c = 2 * Math.PI * r;
@@ -1090,7 +1131,7 @@ function renderHome() {
   </div>`;
 }
 
-// ========== SUBJECTS ==========
+// ========== SUBJECTS (unchanged, now uses merged partials) ==========
 let searchQuery = '';
 const expandedSubjects = new Set();
 const expandedUnits = new Set();
@@ -1242,7 +1283,7 @@ function restoreExpandState() {
   });
 }
 
-// ========== BRANCH VIEW ==========
+// ========== BRANCH VIEW (with add partial) ==========
 function renderBranch(branchId) {
   const branch = findBranch(branchId);
   if (!branch) return '<div class="page-inner"><p>Branche introuvable</p></div>';
@@ -1257,25 +1298,32 @@ function renderBranch(branchId) {
         <span class="branch-progress-val">${bp.done}/${bp.total}</span>
       </div>
     </div>
-    <div class="partial-list">
-      ${branch.partials.map((p, i) => renderPartialCard(p, i)).join('')}
+    <div class="partial-list" id="partial-list-${branchId}">
+      ${getBranchPartials(branchId).map((p, i) => renderPartialCard(p, i)).join('')}
+    </div>
+    <div class="add-partial-row" style="margin-top:16px; display:flex; gap:8px;">
+      <input class="add-exercise-input" id="add-partial-input-${branchId}" placeholder="Nouvelle fiche..." style="flex:1" onkeydown="if(event.key==='Enter')addPartial('${branchId}')"/>
+      <button class="add-exercise-btn" onclick="addPartial('${branchId}')"><i class="ri-add-line"></i> Ajouter</button>
     </div>
   </div>`;
 }
+
 function renderPartialCard(p, i) {
   const done = isCompleted(p.id);
   const rc = getReviewCount(p.id);
+  const isCustom = p.id.startsWith('custom-');
   return `
   <div class="partial-card ${done?'completed':''}" id="pc-${p.id}">
     <div class="partial-header" onclick="togglePartial('${p.id}')">
       <div class="partial-check ${done?'done':''}" id="chk-${p.id}">${done ? '<i class="ri-check-line"></i>' : ''}</div>
       <div class="partial-info">
-        <div class="partial-title">${escHtml(p.title)}</div>
+        <div class="partial-title">${escHtml(p.title)} ${isCustom ? '<span style="font-size:10px;opacity:0.6">(perso)</span>' : ''}</div>
         <div class="partial-meta">
           ${done ? `<span class="chip chip-green"><i class="ri-check-line"></i> Complété</span>` : '<span class="chip chip-accent"><i class="ri-time-line"></i> En cours</span>'}
           ${rc > 0 ? `<span class="chip chip-yellow"><i class="ri-restart-line"></i> ${rc} révisions</span>` : ''}
         </div>
       </div>
+      ${isCustom ? `<button class="delete-partial-btn" onclick="event.stopPropagation();deletePartial('${p.id}')" title="Supprimer"><i class="ri-delete-bin-line"></i></button>` : ''}
       <i class="ri-arrow-down-s-line" id="chevron-${p.id}" style="color:var(--text3);font-size:20px;transition:transform 0.2s"></i>
     </div>
     <div class="partial-body" id="pb-${p.id}">
@@ -1292,6 +1340,50 @@ function renderPartialCard(p, i) {
       </div>
     </div>
   </div>`;
+}
+
+function addPartial(branchId) {
+  const input = document.getElementById('add-partial-input-' + branchId);
+  if (!input || !input.value.trim()) return;
+  addCustomPartial(branchId, input.value.trim());
+  input.value = '';
+  // Re-render branch view
+  document.getElementById('page-content').innerHTML = renderBranch(branchId);
+  showToast('Fiche ajoutée');
+}
+
+function deletePartial(pid) {
+  if (!confirm('Supprimer cette fiche ?')) return;
+  deleteCustomPartial(pid);
+  // Re-render current branch page
+  const currentBranchId = currentPage.replace('branch:', '');
+  document.getElementById('page-content').innerHTML = renderBranch(currentBranchId);
+  showToast('Fiche supprimée');
+}
+
+// ========== PARTIAL INTERACTIONS (unchanged) ==========
+function togglePartial(pid) {
+  const body = document.getElementById('pb-' + pid);
+  const chevron = document.getElementById('chevron-' + pid);
+  if (!body) return;
+  const isOpen = body.classList.contains('open');
+  document.querySelectorAll('.partial-body.open').forEach(el => el.classList.remove('open'));
+  document.querySelectorAll('[id^="chevron-"]').forEach(el => el.style.transform = '');
+  if (!isOpen) {
+    body.classList.add('open');
+    if (chevron) chevron.style.transform = 'rotate(180deg)';
+  }
+}
+function switchTab(pid, tab) {
+  ['notes','exercises','review'].forEach(t => {
+    const btn = document.getElementById(`tab-${t}-${pid}`);
+    if (btn) btn.classList.toggle('active', t === tab);
+  });
+  const area = document.getElementById('tab-content-' + pid);
+  if (!area) return;
+  if (tab === 'notes') area.innerHTML = renderNotesTab(pid);
+  else if (tab === 'exercises') area.innerHTML = renderExercisesTab(pid);
+  else if (tab === 'review') area.innerHTML = renderReviewTab(pid);
 }
 function renderNotesTab(pid) {
   const notes = getNotes(pid);
@@ -1324,29 +1416,6 @@ function renderReviewTab(pid) {
     <div class="review-count">Révisions : <strong>${rc}</strong></div>
     <button class="review-btn" onclick="addReview('${pid}')"><i class="ri-restart-line"></i> Ajouter une révision</button>
   </div>`;
-}
-function togglePartial(pid) {
-  const body = document.getElementById('pb-' + pid);
-  const chevron = document.getElementById('chevron-' + pid);
-  if (!body) return;
-  const isOpen = body.classList.contains('open');
-  document.querySelectorAll('.partial-body.open').forEach(el => el.classList.remove('open'));
-  document.querySelectorAll('[id^="chevron-"]').forEach(el => el.style.transform = '');
-  if (!isOpen) {
-    body.classList.add('open');
-    if (chevron) chevron.style.transform = 'rotate(180deg)';
-  }
-}
-function switchTab(pid, tab) {
-  ['notes','exercises','review'].forEach(t => {
-    const btn = document.getElementById(`tab-${t}-${pid}`);
-    if (btn) btn.classList.toggle('active', t === tab);
-  });
-  const area = document.getElementById('tab-content-' + pid);
-  if (!area) return;
-  if (tab === 'notes') area.innerHTML = renderNotesTab(pid);
-  else if (tab === 'exercises') area.innerHTML = renderExercisesTab(pid);
-  else if (tab === 'review') area.innerHTML = renderReviewTab(pid);
 }
 function saveNotes(pid) {
   const ta = document.getElementById('notes-ta-' + pid);
@@ -1406,7 +1475,7 @@ function toggleComplete(pid) {
   updateGoalCardDisplay();
 }
 
-// ========== SCHEDULE ==========
+// ========== SCHEDULE (unchanged) ==========
 let selectedDay = todayKey();
 function renderSchedule() {
   const today = new Date();
@@ -1495,7 +1564,7 @@ function deleteSession(idx) {
   document.getElementById('page-content').innerHTML = renderSchedule();
 }
 
-// ========== STATS ==========
+// ========== STATS (unchanged) ==========
 function renderStats() {
   const overall = calcOverallProgress();
   const allSubjects = STUDY_DATA.flatMap(cat => cat.subjects);
@@ -1548,7 +1617,7 @@ function renderStats() {
   </div>`;
 }
 
-// ========== GOAL MODAL ==========
+// ========== GOAL MODAL (updated to include custom partials) ==========
 let goalModalSearchQuery = '';
 function openGoalModal() {
   document.getElementById('goal-modal').classList.add('open');
@@ -1586,7 +1655,7 @@ function renderGoalResults(selectedIds) {
       </div>
       <div class="modal-subject-body" id="goal-subject-body-${subjId}">${val.branches.map(b => {
         return `<div class="modal-branch-row" onclick="toggleGoalBranch('${b.id}')"><span class="modal-branch-name">${escHtml(b.title)}</span><i class="ri-arrow-down-s-line modal-branch-chevron" id="goal-branch-chevron-${b.id}"></i></div>
-        <div class="modal-partials-list" id="goal-branch-partials-${b.id}">${b.partials.map(p => {
+        <div class="modal-partials-list" id="goal-branch-partials-${b.id}">${getBranchPartials(b.id).map(p => {
           const checked = selectedIds.includes(p.id);
           return `<label class="modal-partial-label"><div class="modal-partial-checkbox ${checked?'checked':''}">${checked?'<i class="ri-check-line"></i>':''}</div><input type="checkbox" value="${p.id}" ${checked?'checked':''} style="display:none" onchange="toggleGoalCheckbox(this)"><span class="modal-partial-title">${escHtml(p.title)}</span></label>`;
         }).join('')}</div>`;
@@ -1619,7 +1688,7 @@ function saveWeeklyGoalFromModal() {
   showToast('Objectif enregistré');
 }
 
-// ========== CHECKLIST ==========
+// ========== CHECKLIST (unchanged) ==========
 function openChecklistModal() {
   document.getElementById('checklist-modal').classList.add('open');
   renderChecklist();
