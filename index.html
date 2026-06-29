@@ -11,7 +11,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
   <style>
-    /* ========== ROOT & RESET ========== */
     :root {
       --bg: #0f0f13; --bg2: #18181f; --bg3: #22222d; --border: #2e2e3a;
       --text: #f0f0f5; --text2: #a0a0b8; --text3: #606078;
@@ -35,8 +34,8 @@
 
     /* ========== FIX iOS SAFE AREA & VIEWPORT ========== */
     html, body {
-      height: 100vh;          /* fallback */
-      height: 100dvh;         /* dynamic viewport – iOS 15+ */
+      height: 100vh;
+      height: 100dvh;
       width: 100vw;
       width: 100dvw;
       overflow: hidden;
@@ -57,7 +56,6 @@
       transition: background var(--transition), color var(--transition);
       direction: ltr;
       text-align: left;
-      /* حل إضافي لـ iOS Safari */
       height: -webkit-fill-available;
       width: -webkit-fill-available;
     }
@@ -76,7 +74,7 @@
       height: 100dvh;
       width: 100vw;
       width: 100dvw;
-      min-height: -webkit-fill-available; /* مهم لـ iOS */
+      min-height: -webkit-fill-available;
     }
 
     .header {
@@ -107,6 +105,7 @@
     }
     .page-inner { padding: 16px; padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
 
+    /* ========== شريط التنقل السفلي – تم تعديله ========== */
     .bottom-nav {
       background: var(--bg2);
       border-top: 1px solid var(--border);
@@ -115,10 +114,9 @@
       justify-content: space-around;
       flex-shrink: 0;
       z-index: 10;
-      padding-left: max(12px, env(safe-area-inset-left));
-      padding-right: max(12px, env(safe-area-inset-right));
-      padding-bottom: env(safe-area-inset-bottom);
-      height: calc(var(--nav-h) + env(safe-area-inset-bottom));
+      padding-left: max(12px, env(safe-area-inset-left, 0px));
+      padding-right: max(12px, env(safe-area-inset-right, 0px));
+      height: var(--nav-h);               /* ارتفاع ثابت بدون إضافة safe-area-inset-bottom */
       box-sizing: border-box;
     }
     .nav-item {
@@ -142,8 +140,7 @@
     .nav-item.active { color: var(--accent); } .nav-item.active i { transform: scale(1.15); }
     .nav-item:active { background: var(--bg3); transform: scale(0.9); }
 
-    /* ========== باقي الأنماط ========== */
-    /* (كل الأنماط التالية تبقى كما هي – لم تتغير) */
+    /* ========== باقي الأنماط (لم تتغير) ========== */
     .home-hero { background: linear-gradient(135deg, var(--accent) 0%, var(--hero-end) 100%); border-radius: var(--radius); padding: 22px 20px; color: #fff; margin-bottom: 16px; position: relative; overflow: hidden; }
     .home-hero::after { content: ''; position: absolute; top: -30px; right: -30px; width: 160px; height: 160px; background: rgba(255,255,255,0.06); border-radius: 50%; }
     .home-hero-label { font-size: 13px; opacity: 0.85; margin-bottom: 4px; }
@@ -445,7 +442,7 @@ function applyTheme(t) {
 function toggleTheme() { currentTheme = currentTheme === 'dark' ? 'light' : 'dark'; LS.set(KEY_THEME, currentTheme); applyTheme(currentTheme); }
 applyTheme(currentTheme);
 
-// ========== DATA (Initiale simplifiée - sans Unit/Lesson) ==========
+// ========== DATA ==========
 const DEFAULT_SUBJECTS = [
   { id: "subj-physradio", title: "Physique appliquée en radiologie", icon: 'ri-flashlight-line', color: '#f59e0b' },
   { id: "subj-physcan", title: "Physique appliquée en scanographie", icon: 'ri-scan-line', color: '#3b82f6' },
@@ -472,8 +469,6 @@ const DEFAULT_SUBJECTS = [
   { id: "subj-demographie", title: "Démographie, épidémiologie et statistiques sanitaires", icon: 'ri-pie-chart-line', color: '#0891b2' },
   { id: "subj-psychoSocio", title: "Psychologie, sociologie", icon: 'ri-user-heart-line', color: '#be185d' }
 ];
-
-function createDefaultPartials(subjectId) { return []; }
 
 function initSubjects() {
   if (!LS.get(KEY_SUBJECTS, null)) {
@@ -813,7 +808,7 @@ function onSearchInput(v) {
   }
 }
 
-// ========== FOLDER VIEW - عرض الـ partials مباشرة داخل المودول ==========
+// ========== FOLDER VIEW ==========
 function renderFolderView(subjectId) {
   const subject = getSubjects().find(s => s.id === subjectId);
   if (!subject) return '<div class="page-inner"><p>Module introuvable</p></div>';
@@ -1483,7 +1478,7 @@ nav('home', false);
 </script>
 
 <script>
-// ===== PWA: أيقونة احترافية – ماسح الأشعة الطبي =====
+// ===== PWA: أيقونة احترافية =====
 (function() {
   try {
     const S = 512, CR = 110;
@@ -1492,7 +1487,6 @@ nav('home', false);
     const ctx = canvas.getContext('2d');
     const cx = S / 2, cy = S / 2;
 
-    // ── 1. خلفية بتدرج بنفسجي عميق ──
     const bg = ctx.createLinearGradient(0, 0, S, S);
     bg.addColorStop(0, '#2d1b8e');
     bg.addColorStop(0.45, '#6c63ff');
@@ -1510,14 +1504,12 @@ nav('home', false);
     ctx.closePath();
     ctx.fill();
 
-    // ── 2. بريق مركزي ──
     const glow = ctx.createRadialGradient(cx, cy - 40, 10, cx, cy, 260);
     glow.addColorStop(0, 'rgba(255,255,255,0.18)');
     glow.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = glow;
     ctx.beginPath(); ctx.arc(cx, cy, 260, 0, Math.PI * 2); ctx.fill();
 
-    // ── 3. حلقة الماسح الخارجية (CT ring) ──
     ctx.shadowColor = 'rgba(108,99,255,0.6)';
     ctx.shadowBlur = 30;
     ctx.beginPath(); ctx.arc(cx, cy, 190, 0, Math.PI * 2);
@@ -1528,11 +1520,9 @@ nav('home', false);
     ctx.beginPath(); ctx.arc(cx, cy, 188, -Math.PI * 0.75, -Math.PI * 0.25);
     ctx.strokeStyle = '#fff'; ctx.lineWidth = 22; ctx.stroke();
 
-    // ── 4. حلقة وسطى ──
     ctx.beginPath(); ctx.arc(cx, cy, 118, 0, Math.PI * 2);
     ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 10; ctx.stroke();
 
-    // ── 5. خطوط التقاطع ──
     ctx.strokeStyle = 'rgba(255,255,255,0.22)'; ctx.lineWidth = 4;
     const drawLine = (x1, y1, x2, y2) => { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); };
     drawLine(cx - 200, cy, cx + 200, cy);
@@ -1541,7 +1531,6 @@ nav('home', false);
     drawLine(cx - 145, cy - 145, cx + 145, cy + 145);
     drawLine(cx + 145, cy - 145, cx - 145, cy + 145);
 
-    // ── 6. نبضة قلب ──
     ctx.strokeStyle = 'rgba(255,255,255,0.75)'; ctx.lineWidth = 8;
     ctx.lineJoin = 'round'; ctx.lineCap = 'round';
     ctx.beginPath();
@@ -1556,7 +1545,6 @@ nav('home', false);
     ctx.lineTo(cx + w, yb);
     ctx.stroke();
 
-    // ── 7. نقطة مركزية ──
     const dotGlow = ctx.createRadialGradient(cx, cy, 0, cx, cy, 38);
     dotGlow.addColorStop(0, 'rgba(255,255,255,1)');
     dotGlow.addColorStop(0.5, 'rgba(200,180,255,0.6)');
@@ -1566,7 +1554,6 @@ nav('home', false);
     ctx.fillStyle = '#fff';
     ctx.beginPath(); ctx.arc(cx, cy, 16, 0, Math.PI * 2); ctx.fill();
 
-    // ── 8. حرف "Z" ──
     ctx.font = 'bold 58px sans-serif';
     ctx.fillStyle = 'rgba(255,255,255,0.28)';
     ctx.textAlign = 'right'; ctx.textBaseline = 'bottom';
@@ -1574,17 +1561,14 @@ nav('home', false);
 
     const iconUrl = canvas.toDataURL('image/png');
 
-    // Apple Touch Icon
     let ti = document.querySelector('link[rel="apple-touch-icon"]');
     if (!ti) { ti = document.createElement('link'); document.head.appendChild(ti); }
     ti.rel = 'apple-touch-icon'; ti.sizes = '512x512'; ti.href = iconUrl;
 
-    // Favicon
     let fav = document.querySelector('link[rel="icon"]');
     if (!fav) { fav = document.createElement('link'); document.head.appendChild(fav); }
     fav.rel = 'icon'; fav.type = 'image/png'; fav.href = iconUrl;
 
-    // Manifest
     const manifest = {
       name: 'Préparation Zakaria – Radiologie',
       short_name: 'Prép Zakaria',
