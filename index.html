@@ -435,7 +435,7 @@ const DEFAULT_SUBJECTS = [
   { id: "subj-maintenance", title: "Maintenance, démarche qualité, gestion des risques", icon: 'ri-settings-3-line', color: '#78716c' },
   { id: "subj-radioBio", title: "Radiobiologie et radioprotection", icon: 'ri-shield-flash-line', color: '#ef4444' },
   { id: "subj-echoAngio", title: "Échographie et angiographie", icon: 'ri-pulse-line', color: '#10b981' },
-  { id: "subj-osteoAxiale", title: "Ostéologie axiale", icon: 'ri-accessibility-line', color: '#d97706' },
+  { id: "subj-osteoAxiale", title: "Ostéologie axiale", icon: 'ri-user-line', color: '#d97706' },
   { id: "subj-osteoApp", title: "Ostéologie appendiculaire", icon: 'ri-run-line', color: '#b45309' },
   { id: "subj-mathsPhys", title: "Mathématiques et physique fondamentale", icon: 'ri-calculator-line', color: '#6366f1' },
   { id: "subj-semioPath", title: "Sémiologie et pathologie médicale", icon: 'ri-stethoscope-line', color: '#dc2626' },
@@ -445,31 +445,30 @@ const DEFAULT_SUBJECTS = [
   { id: "subj-psychoSocio", title: "Psychologie, sociologie", icon: 'ri-user-heart-line', color: '#be185d' }
 ];
 
-function createDefaultPartials(subjectId) {
-  const titles = ["Partie 1 – Généralités", "Partie 2 – Applications", "Partie 3 – Cas cliniques"];
-  return titles.map((t, i) => ({ id: `bp-${subjectId}-${i+1}`, title: t }));
-}
+function createDefaultPartials(subjectId) { return []; }
 
 function initSubjects() {
   if (!LS.get(KEY_SUBJECTS, null)) {
-    // هيكل مبسط: module يحتوي مباشرة على branches
+    // كل module يحتوي على branch رئيسي واحد فارغ
     const subjectsWithStructure = DEFAULT_SUBJECTS.map(s => ({
       ...s,
-      branches: [{ id: "b-" + s.id, title: "Chapitre 1", partials: createDefaultPartials(s.id) }]
+      branches: [{ id: "main-" + s.id, title: "Main", partials: [] }],
+      _simple: true
     }));
     LS.set(KEY_SUBJECTS, subjectsWithStructure);
   } else {
-    // ترقية البيانات القديمة إذا لزم الأمر
+    // ترقية: حذف جميع الفصول وإعادة البناء بـ branch رئيسي فارغ
     const existing = LS.get(KEY_SUBJECTS, []);
-    const needsUpgrade = existing.some(s => s.units && !s.branches);
-    if (needsUpgrade) {
-      const upgraded = existing.map(s => {
-        if (s.branches) return s;
-        const allBranches = [];
-        (s.units||[]).forEach(u => (u.lessons||[]).forEach(l => (l.branches||[]).forEach(b => allBranches.push(b))));
-        return { id: s.id, title: s.title, icon: s.icon, color: s.color, branches: allBranches.length ? allBranches : [{ id: "b-" + s.id, title: "Chapitre 1", partials: createDefaultPartials(s.id) }] };
-      });
-      LS.set(KEY_SUBJECTS, upgraded);
+    const needsMigration = existing.some(s => !s._simple);
+    if (needsMigration) {
+      const migrated = existing.map(s => ({
+        id: s.id, title: s.title, icon: s.icon, color: s.color,
+        branches: [{ id: "main-" + s.id, title: "Main", partials: [] }],
+        _simple: true
+      }));
+      LS.set(KEY_SUBJECTS, migrated);
+      LS.set(KEY_CUSTOM_PARTIALS, []);
+      LS.set(KEY_PROGRESS, {});
     }
   }
 }
@@ -482,9 +481,9 @@ const ICON_OPTIONS = [
   'ri-book-line', 'ri-flashlight-line', 'ri-scan-line', 'ri-file-list-3-line', 'ri-flask-line', 'ri-file-text-line',
   'ri-heart-pulse-line', 'ri-scan-2-line', 'ri-ruler-line', 'ri-tools-line', 'ri-capsule-line', 'ri-microscope-line',
   'ri-government-line', 'ri-chat-3-line', 'ri-settings-3-line', 'ri-shield-flash-line', 'ri-pulse-line',
-  'ri-accessibility-line', 'ri-calculator-line', 'ri-stethoscope-line', 'ri-nurse-line', 'ri-scales-3-line',
+  'ri-user-line', 'ri-calculator-line', 'ri-stethoscope-line', 'ri-nurse-line', 'ri-scales-3-line',
   'ri-pie-chart-line', 'ri-user-heart-line', 'ri-lungs-line', 'ri-lightbulb-line', 'ri-discuss-line',
-  'ri-syringe-line', 'ri-hospital-line', 'ri-health-book-line', 'ri-thermometer-line', 'ri-flask-2-line'
+  'ri-syringe-line', 'ri-hospital-line', 'ri-book-2-line', 'ri-thermometer-line', 'ri-drop-line'
 ];
 
 const COLOR_OPTIONS = [
@@ -779,25 +778,36 @@ function onSearchInput(v) {
   }
 }
 
-// ========== FOLDER VIEW (مبسطة - مباشرة إلى branches) ==========
+// ========== FOLDER VIEW - عرض الـ partials مباشرة داخل المودول ==========
 function renderFolderView(subjectId) {
   const subject = getSubjects().find(s => s.id === subjectId);
   if (!subject) return '<div class="page-inner"><p>Module introuvable</p></div>';
-  
-  const branches = subject.branches || [];
-  const subjectPartials = getAllPartials().filter(p=>p.subjectId===subjectId);
-  const doneP = subjectPartials.filter(p=>isCompleted(p.id)).length;
-  const allP = subjectPartials.length;
-  const pct = allP ? Math.round((doneP/allP)*100) : 0;
-  
-  return `
+
+  // Branch رئيسي واحد لكل module
+  const mainBranch = (subject.branches || [])[0] || { id: 'main-' + subjectId, title: 'Main', partials: [] };
+  const branchId = mainBranch.id;
+
+  const partials = getBranchPartials(branchId);
+  const doneP = partials.filter(p => isCompleted(p.id)).length;
+  const allP = partials.length;
+  const pct = allP ? Math.round((doneP / allP) * 100) : 0;
+
+  const partialsHtml = partials.length
+    ? '<div class="partial-list">' + partials.map((p, i) => renderPartialCard(p, i)).join('') + '</div>'
+    : `<div class="empty-state" style="padding:40px 20px">
+        <i class="ri-file-add-line" style="font-size:56px;color:var(--accent);opacity:0.7"></i>
+        <p style="margin-top:12px;font-size:14px;color:var(--text3)">Aucune fiche pour l'instant</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:4px">Ajoutez votre première fiche ci-dessous</p>
+      </div>`;
+
+  const html = `
     <div class="page-inner">
       <div class="folder-breadcrumb">
         <button class="folder-back-btn" onclick="nav('subjects')">
           <i class="ri-arrow-left-line"></i> Tous les modules
         </button>
       </div>
-      
+
       <div class="branch-header-card">
         <div class="branch-breadcrumb">
           <span style="display:flex;align-items:center;gap:6px">
@@ -805,7 +815,7 @@ function renderFolderView(subjectId) {
             ${escHtml(subject.title)}
           </span>
         </div>
-        <div class="branch-main-title">Contenu du module</div>
+        <div class="branch-main-title">Fiches du module</div>
         <div class="branch-progress-row">
           <div class="branch-progress-bar">
             <div class="progress-bar-fill" style="width:${pct}%;background:${subject.color}"></div>
@@ -813,57 +823,31 @@ function renderFolderView(subjectId) {
           <span class="branch-progress-val">${doneP}/${allP}</span>
         </div>
       </div>
-      
-      <!-- ✅ إضافة branch جديد مباشرة -->
-      <div class="add-branch-inline">
-        <input class="add-exercise-input" id="add-branch-input-${subjectId}" placeholder="Ajouter un nouveau chapitre..." onkeydown="if(event.key==='Enter')addBranchInline('${subjectId}')" aria-label="Nouveau chapitre"/>
-        <button class="add-exercise-btn" onclick="addBranchInline('${subjectId}')"><i class="ri-add-line"></i> Ajouter</button>
-      </div>
-      
-      <div class="section-title">Chapitres (${branches.length})</div>
-      <div class="file-browser">
-        ${branches.length ? branches.map(b => {
-          const bp = calcBranchProgress(b.id);
-          const r = 18;
-          const circ = 2 * Math.PI * r;
-          const off = circ - (bp.pct / 100) * circ;
-          const isComplete = bp.done === bp.total && bp.total > 0;
-          const progressColor = isComplete ? 'var(--green)' : (subject.color || 'var(--accent)');
-          
-          return `
-            <div class="file-item" onclick="nav('branch:${b.id}')">
-              <div class="file-item-icon" style="background:${subject.color}22; color:${subject.color}">
-                <i class="ri-file-text-line"></i>
-              </div>
-              <div class="file-item-info">
-                <div class="file-item-title">${escHtml(b.title)}</div>
-                <div class="file-item-meta">${bp.done}/${bp.total} parties</div>
-              </div>
-              <div class="file-progress-ring">
-                <svg width="44" height="44" viewBox="0 0 44 44">
-                  <circle cx="22" cy="22" r="${r}" fill="none" stroke="var(--bg3)" stroke-width="4"/>
-                  <circle cx="22" cy="22" r="${r}" fill="none" stroke="${progressColor}" stroke-width="4" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${off}"/>
-                </svg>
-                <div class="file-progress-text">${bp.pct}%</div>
-              </div>
-              <i class="ri-arrow-right-s-line file-arrow"></i>
-            </div>
-          `;
-        }).join('') : '<div class="empty-state"><i class="ri-file-text-line"></i><p>Aucun chapitre dans ce module</p></div>'}
+
+      ${partialsHtml}
+
+      <div class="add-partial-row" style="margin-top:16px;display:flex;gap:8px;">
+        <input class="add-exercise-input" id="add-partial-folder-${branchId}"
+          placeholder="Nouvelle fiche..." style="flex:1"
+          onkeydown="if(event.key==='Enter')addPartialToModule('${subjectId}','${branchId}')"
+          aria-label="Nouvelle fiche"/>
+        <button class="add-exercise-btn" onclick="addPartialToModule('${subjectId}','${branchId}')">
+          <i class="ri-add-line"></i> Ajouter
+        </button>
       </div>
     </div>
   `;
+  setTimeout(() => restoreBranchState(), 0);
+  return html;
 }
 
-function addBranchInline(subjectId) {
-  const input = document.getElementById('add-branch-input-' + subjectId);
+function addPartialToModule(subjectId, branchId) {
+  const input = document.getElementById('add-partial-folder-' + branchId);
   if (!input || !input.value.trim()) return;
-  const branchId = addBranchToSubject(subjectId, input.value.trim());
-  if (branchId) {
-    input.value = '';
-    document.getElementById('page-content').innerHTML = renderFolderView(subjectId);
-    showToast('Chapitre ajouté');
-  }
+  addCustomPartial(branchId, input.value.trim());
+  input.value = '';
+  document.getElementById('page-content').innerHTML = renderFolderView(subjectId);
+  showToast('Fiche ajoutée');
 }
 
 // ========== BRANCH VIEW ==========
@@ -981,9 +965,12 @@ function addPartial(branchId) {
 
 function deletePartial(pid) { 
   if(!confirm('Supprimer cette fiche ?')) return; 
-  deleteCustomPartial(pid); 
-  const currentBranchId=currentPage.replace('branch:',''); 
-  document.getElementById('page-content').innerHTML=renderBranch(currentBranchId); 
+  deleteCustomPartial(pid);
+  if (currentPage.startsWith('folder:')) {
+    document.getElementById('page-content').innerHTML = renderFolderView(currentPage.replace('folder:',''));
+  } else {
+    document.getElementById('page-content').innerHTML = renderBranch(currentPage.replace('branch:',''));
+  }
   showToast('Fiche supprimée'); 
 }
 
