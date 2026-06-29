@@ -18,6 +18,7 @@
       --yellow: #f59e0b; --yellow-light: rgba(245,158,11,0.12);
       --red: #ef4444; --red-light: rgba(239,68,68,0.12);
       --radius: 14px; --radius-sm: 8px; --nav-h: 64px; --header-h: 56px; --transition: 0.2s ease;
+      --hero-end: #9c5cf5; /* ✅ إصلاح 10: متغير للتدرج */
     }
     [data-theme="light"] {
       --bg: #f5f5fa; --bg2: #ffffff; --bg3: #ededf5; --border: #e0e0ea;
@@ -26,6 +27,7 @@
       --green: #16a34a; --green-light: rgba(22,163,74,0.1);
       --yellow: #d97706; --yellow-light: rgba(217,119,6,0.1);
       --red: #dc2626; --red-light: rgba(220,38,38,0.1);
+      --hero-end: #7c3aed; /* ✅ إصلاح 10: لون أفتح للتدرج */
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html, body { height: 100%; overflow: hidden; }
@@ -46,7 +48,8 @@
     .nav-item i { font-size: 22px; transition: transform 0.15s; }
     .nav-item.active { color: var(--accent); } .nav-item.active i { transform: scale(1.15); }
     .nav-item:active { background: var(--bg3); transform: scale(0.9); }
-    .home-hero { background: linear-gradient(135deg, var(--accent) 0%, #9c5cf5 100%); border-radius: var(--radius); padding: 22px 20px; color: #fff; margin-bottom: 16px; position: relative; overflow: hidden; }
+    /* ✅ إصلاح 10: استخدام متغير للتدرج */
+    .home-hero { background: linear-gradient(135deg, var(--accent) 0%, var(--hero-end) 100%); border-radius: var(--radius); padding: 22px 20px; color: #fff; margin-bottom: 16px; position: relative; overflow: hidden; }
     .home-hero::after { content: ''; position: absolute; top: -30px; right: -30px; width: 160px; height: 160px; background: rgba(255,255,255,0.06); border-radius: 50%; }
     .home-hero-label { font-size: 13px; opacity: 0.85; margin-bottom: 4px; }
     .home-hero-title { font-size: 22px; font-weight: 700; margin-bottom: 16px; }
@@ -78,7 +81,7 @@
     .search-bar input { flex: 1; background: none; border: none; outline: none; font-family: inherit; font-size: 14px; color: var(--text); }
     .search-bar input::placeholder { color: var(--text3); }
     .category-block { margin-bottom: 16px; }
-    .category-header { background: linear-gradient(135deg, var(--accent) 0%, #9c5cf5 100%); color: #fff; border-radius: var(--radius); padding: 12px 16px; display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 8px; transition: transform 0.15s; }
+    .category-header { background: linear-gradient(135deg, var(--accent) 0%, var(--hero-end) 100%); color: #fff; border-radius: var(--radius); padding: 12px 16px; display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 8px; transition: transform 0.15s; }
     .category-header:active { transform: scale(0.97); }
     .category-header-text { flex: 1; font-weight: 700; font-size: 16px; }
     .category-badge { background: rgba(255,255,255,0.2); border-radius: 50px; padding: 2px 10px; font-size: 12px; }
@@ -183,7 +186,8 @@
     .heat-cell { aspect-ratio: 1; border-radius: 3px; background: var(--bg3); transition: transform 0.1s; } .heat-cell:active { transform: scale(1.3); }
     .heat-cell[data-lvl="1"] { background: rgba(108,99,255,0.25); } .heat-cell[data-lvl="2"] { background: rgba(108,99,255,0.5); } .heat-cell[data-lvl="3"] { background: rgba(108,99,255,0.75); } .heat-cell[data-lvl="4"] { background: var(--accent); }
     .heatmap-legend { display: flex; align-items: center; gap: 6px; justify-content: flex-end; font-size: 11px; color: var(--text3); } .heatmap-legend-cell { width: 12px; height: 12px; border-radius: 3px; }
-    #toast { position: fixed; bottom: calc(var(--nav-h) + 16px); left: 50%; transform: translateX(-50%) translateY(20px); background: var(--text); color: var(--bg); border-radius: 50px; padding: 10px 20px; font-size: 13px; font-weight: 600; white-space: nowrap; z-index: 1000; opacity: 0; transition: all 0.3s; pointer-events: none; } #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    /* ✅ إصلاح 9: رفع z-index ليكون فوق النوافذ المنبثقة */
+    #toast { position: fixed; bottom: calc(var(--nav-h) + 16px); left: 50%; transform: translateX(-50%) translateY(20px); background: var(--text); color: var(--bg); border-radius: 50px; padding: 10px 20px; font-size: 13px; font-weight: 600; white-space: nowrap; z-index: 1100; opacity: 0; transition: all 0.3s; pointer-events: none; } #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     .chip { display: inline-flex; align-items: center; gap: 4px; border-radius: 50px; padding: 3px 10px; font-size: 11px; font-weight: 600; }
     .chip-green { background: var(--green-light); color: var(--green); } .chip-yellow { background: var(--yellow-light); color: var(--yellow); } .chip-accent { background: var(--accent-light); color: var(--accent); }
     .divider { height: 1px; background: var(--border); margin: 12px 0; } .text-accent { color: var(--accent); } .text-green { color: var(--green); }
@@ -232,32 +236,32 @@
 <body>
 <div id="app">
   <div class="header" id="header">
-    <button class="header-action back-btn" id="back-btn" style="display:none" onclick="goBack()"><i class="ri-arrow-left-line"></i></button>
+    <button class="header-action back-btn" id="back-btn" style="display:none" onclick="goBack()" aria-label="Retour"><i class="ri-arrow-left-line"></i></button>
     <div class="header-title" id="header-title">Préparation Zakaria</div>
-    <button class="header-action" onclick="toggleTheme()" id="theme-btn" title="Changer le thème"><i class="ri-moon-line" id="theme-icon"></i></button>
+    <button class="header-action" onclick="toggleTheme()" id="theme-btn" title="Changer le thème" aria-label="Changer le thème"><i class="ri-moon-line" id="theme-icon"></i></button>
   </div>
   <div class="page" id="page-content"></div>
   <nav class="bottom-nav" id="bottom-nav">
-    <button class="nav-item active" data-page="home" onclick="nav('home')"><i class="ri-home-5-line"></i>Accueil</button>
-    <button class="nav-item" data-page="subjects" onclick="nav('subjects')"><i class="ri-book-open-line"></i>Modules</button>
-    <button class="nav-item" data-page="schedule" onclick="nav('schedule')"><i class="ri-calendar-2-line"></i>Planning</button>
-    <button class="nav-item" data-page="stats" onclick="nav('stats')"><i class="ri-bar-chart-2-line"></i>Stats</button>
+    <button class="nav-item active" data-page="home" onclick="nav('home')" aria-label="Accueil"><i class="ri-home-5-line"></i>Accueil</button>
+    <button class="nav-item" data-page="subjects" onclick="nav('subjects')" aria-label="Modules"><i class="ri-book-open-line"></i>Modules</button>
+    <button class="nav-item" data-page="schedule" onclick="nav('schedule')" aria-label="Planning"><i class="ri-calendar-2-line"></i>Planning</button>
+    <button class="nav-item" data-page="stats" onclick="nav('stats')" aria-label="Statistiques"><i class="ri-bar-chart-2-line"></i>Stats</button>
   </nav>
 </div>
 
 <!-- Modales -->
 <div id="goal-modal" class="modal-overlay">
-  <div class="modal-card"><div class="modal-header"><div class="modal-title">Objectif de la semaine</div><button class="modal-close" onclick="closeGoalModal()"><i class="ri-close-line"></i></button></div><div class="modal-body"><div class="modal-search-bar"><div class="search-bar" style="margin-bottom:0"><i class="ri-search-line"></i><input type="search" id="goal-search-input" placeholder="Rechercher..." oninput="onGoalModalSearch()" autocomplete="off" /></div></div><div id="goal-modal-results"></div></div><div class="modal-footer"><button class="save-notes-btn" onclick="saveWeeklyGoalFromModal()" style="background:var(--accent);color:#fff">Enregistrer</button><button class="save-notes-btn" onclick="closeGoalModal()" style="background:var(--bg3);color:var(--text)">Annuler</button></div></div>
+  <div class="modal-card"><div class="modal-header"><div class="modal-title">Objectif de la semaine</div><button class="modal-close" onclick="closeGoalModal()" aria-label="Fermer"><i class="ri-close-line"></i></button></div><div class="modal-body"><div class="modal-search-bar"><div class="search-bar" style="margin-bottom:0"><i class="ri-search-line"></i><input type="search" id="goal-search-input" placeholder="Rechercher..." oninput="onGoalModalSearch()" autocomplete="off" aria-label="Rechercher une partie" /></div></div><div id="goal-modal-results"></div></div><div class="modal-footer"><button class="save-notes-btn" onclick="saveWeeklyGoalFromModal()" style="background:var(--accent);color:#fff">Enregistrer</button><button class="save-notes-btn" onclick="closeGoalModal()" style="background:var(--bg3);color:var(--text)">Annuler</button></div></div>
 </div>
 <div id="checklist-modal" class="modal-overlay">
-  <div class="modal-card"><div class="modal-header"><div class="modal-title">Tâches de la semaine</div><button class="modal-close" onclick="closeChecklistModal()"><i class="ri-close-line"></i></button></div><div class="modal-body" id="checklist-body"></div><div class="modal-footer"><button class="save-notes-btn" onclick="closeChecklistModal()" style="background:var(--bg3);color:var(--text)">Fermer</button></div></div>
+  <div class="modal-card"><div class="modal-header"><div class="modal-title">Tâches de la semaine</div><button class="modal-close" onclick="closeChecklistModal()" aria-label="Fermer"><i class="ri-close-line"></i></button></div><div class="modal-body" id="checklist-body"></div><div class="modal-footer"><button class="save-notes-btn" onclick="closeChecklistModal()" style="background:var(--bg3);color:var(--text)">Fermer</button></div></div>
 </div>
 <!-- Modal pour ajouter/modifier un module -->
 <div id="subject-modal" class="modal-overlay">
   <div class="modal-card">
-    <div class="modal-header"><div class="modal-title" id="subject-modal-title">Nouveau Module</div><button class="modal-close" onclick="closeSubjectModal()"><i class="ri-close-line"></i></button></div>
+    <div class="modal-header"><div class="modal-title" id="subject-modal-title">Nouveau Module</div><button class="modal-close" onclick="closeSubjectModal()" aria-label="Fermer"><i class="ri-close-line"></i></button></div>
     <div class="modal-body">
-      <div style="margin-bottom:16px"><label style="font-size:13px;color:var(--text3);display:block;margin-bottom:4px">Nom du module</label><input class="add-exercise-input" id="subject-name-input" placeholder="Ex: Anatomie pathologique" style="width:100%"></div>
+      <div style="margin-bottom:16px"><label style="font-size:13px;color:var(--text3);display:block;margin-bottom:4px">Nom du module</label><input class="add-exercise-input" id="subject-name-input" placeholder="Ex: Anatomie pathologique" style="width:100%" aria-label="Nom du module"></div>
       <label style="font-size:13px;color:var(--text3);display:block;margin-bottom:4px">Icône</label>
       <div class="icon-select-grid" id="icon-select-grid"></div>
       <label style="font-size:13px;color:var(--text3);display:block;margin-bottom:4px;margin-top:12px">Couleur</label>
@@ -298,8 +302,8 @@ const DEFAULT_SUBJECTS = [
   { id: "subj-protoIRM", title: "Protocoles IRM", icon: 'ri-file-text-line', color: '#14b8a6' },
   { id: "subj-anatphys", title: "Anatomie et physiologie humaine", icon: 'ri-heart-pulse-line', color: '#ef4444' },
   { id: "subj-anatTopo", title: "Anatomie topographique et radiologique", icon: 'ri-body-scan-line', color: '#f97316' },
-  { id: "subj-techAxial", title: "Technique axiale d’exploration radiologique", icon: 'ri-ruler-line', color: '#84cc16' },
-  { id: "subj-techApp", title: "Technique appendiculaire d’exploration radiologique", icon: 'ri-tools-line', color: '#06b6d4' },
+  { id: "subj-techAxial", title: "Technique axiale d'exploration radiologique", icon: 'ri-ruler-line', color: '#84cc16' },
+  { id: "subj-techApp", title: "Technique appendiculaire d'exploration radiologique", icon: 'ri-tools-line', color: '#06b6d4' },
   { id: "subj-pharmaco", title: "Pharmacologie et technique viscérale", icon: 'ri-capsule-line', color: '#a855f7' },
   { id: "subj-sciencesBio", title: "Les sciences biologiques", icon: 'ri-microscope-line', color: '#22c55e' },
   { id: "subj-santeNat", title: "Systèmes nationaux de la santé et économie de la santé", icon: 'ri-government-line', color: '#64748b' },
@@ -312,16 +316,22 @@ const DEFAULT_SUBJECTS = [
   { id: "subj-mathsPhys", title: "Mathématiques et physique fondamentale", icon: 'ri-calculator-line', color: '#6366f1' },
   { id: "subj-semioPath", title: "Sémiologie et pathologie médicale", icon: 'ri-stethoscope-line', color: '#dc2626' },
   { id: "subj-soinsInf", title: "Soins infirmiers de base et pathologie chirurgicale", icon: 'ri-nurse-line', color: '#0ea5e9' },
-  { id: "subj-droitEthique", title: "Le droit et l’éthique", icon: 'ri-scales-3-line', color: '#4b5563' },
+  { id: "subj-droitEthique", title: "Le droit et l'éthique", icon: 'ri-scales-3-line', color: '#4b5563' },
   { id: "subj-demographie", title: "Démographie, épidémiologie et statistiques sanitaires", icon: 'ri-pie-chart-line', color: '#0891b2' },
   { id: "subj-psychoSocio", title: "Psychologie, sociologie", icon: 'ri-user-heart-line', color: '#be185d' }
 ];
+
+// ✅ إصلاح 5: إضافة بطاقات نموذجية (3 بطاقات لكل فرع افتراضي)
+function createDefaultPartials(subjectId) {
+  const titles = ["Partie 1 – Généralités", "Partie 2 – Applications", "Partie 3 – Cas cliniques"];
+  return titles.map((t, i) => ({ id: `bp-${subjectId}-${i+1}`, title: t }));
+}
 
 function initSubjects() {
   if (!LS.get(KEY_SUBJECTS, null)) {
     const subjectsWithStructure = DEFAULT_SUBJECTS.map(s => ({
       ...s,
-      units: [{ id: "u-" + s.id, title: "Général", lessons: [{ id: "l-" + s.id, title: "Cours", branches: [{ id: "b-" + s.id, title: "Chapitre 1", partials: [] }] }] }]
+      units: [{ id: "u-" + s.id, title: "Général", lessons: [{ id: "l-" + s.id, title: "Cours", branches: [{ id: "b-" + s.id, title: "Chapitre 1", partials: createDefaultPartials(s.id) }] }] }]
     }));
     LS.set(KEY_SUBJECTS, subjectsWithStructure);
   }
@@ -384,7 +394,14 @@ function getWeekKey() { const m=getCurrentWeekMonday(); return `${m.getFullYear(
 function formatDate(d) { return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`; }
 function getWeeklyGoal() { const g=LS.get(KEY_WEEKLY_GOAL,null); if(g&&g.weekMonday===getWeekKey()) return g; if(g) LS.set(KEY_WEEKLY_GOAL,null); return null; }
 function saveWeeklyGoal(ids) { LS.set(KEY_WEEKLY_GOAL,{weekMonday:getWeekKey(),startDate:getCurrentWeekMonday().toISOString(),endDate:getWeekEnd(getCurrentWeekMonday()).toISOString(),partials:ids}); }
-function calcGoalProgress(goal) { const {partials}=goal; const s=new Date(goal.startDate),e=new Date(goal.endDate); let d=0; partials.forEach(pid=>{ const p=getProgress()[pid]; if(p&&p.completed&&p.completedAt){ const c=new Date(p.completedAt); if(c>=s&&c<e) d++; } }); return {done:d,total:partials.length,pct:partials.length?Math.round((d/partials.length)*100):0}; }
+
+// ✅ إصلاح 2: فحص الحالة الحالية عوضاً عن تاريخ الإكمال
+function calcGoalProgress(goal) {
+  const {partials}=goal;
+  let d=0;
+  partials.forEach(pid=>{ if(isCompleted(pid)) d++; });
+  return {done:d,total:partials.length,pct:partials.length?Math.round((d/partials.length)*100):0};
+}
 
 // ========== ROUTER ==========
 let currentPage='home', historyStack=[];
@@ -414,34 +431,117 @@ function renderHome() {
 
 // ========== SUBJECTS ==========
 let searchQuery = ''; const expandedSubjects = new Set(); const expandedUnits = new Set();
-function renderSubjects() { return `<div class="page-inner"><div class="search-bar"><i class="ri-search-line"></i><input type="search" id="search-input" placeholder="Rechercher un module..." value="${escHtml(searchQuery)}" oninput="onSearchInput(this.value)" autocomplete="off" /></div><div id="subjects-results"></div></div>`; }
+function renderSubjects() { return `<div class="page-inner"><div class="search-bar"><i class="ri-search-line"></i><input type="search" id="search-input" placeholder="Rechercher un module..." value="${escHtml(searchQuery)}" oninput="onSearchInput(this.value)" autocomplete="off" aria-label="Rechercher un module" /></div><div id="subjects-results"></div></div>`; }
 function onSearchInput(v) { searchQuery=v; updateSubjectsResults(); }
 function updateSubjectsResults() { const c=document.getElementById('subjects-results'); if(!c) return; const q=searchQuery.toLowerCase().trim(); if(q==='') { c.innerHTML=renderCategoryList(); restoreExpandState(); } else { c.innerHTML=renderSearchResults(q); } }
-function renderSearchResults(q) { const branches=getAllBranches().filter(b=>b.title.toLowerCase().includes(q)||b.subjectTitle.toLowerCase().includes(q)); if(!branches.length) return '<div class="empty-state"><i class="ri-search-line"></i><p>Aucun résultat</p></div>'; return branches.map(b=>{ const meta=subjMeta(b.subjectId); const doneCount=b.partials.filter(p=>isCompleted(p.id)).length; return `<div class="subject-card" style="margin-bottom:8px"><div class="subject-header" onclick="nav('branch:${b.id}')"><div class="subject-icon" style="background:${meta.color?meta.color+'33':'rgba(108,99,255,0.15)'};color:${meta.color||'#6c63ff'}"><i class="${meta.icon}"></i></div><div class="subject-info"><div class="subject-name">${escHtml(b.title)}</div><div class="subject-progress">${escHtml(b.subjectTitle)} · ${doneCount}/${b.partials.length}</div></div><i class="ri-arrow-right-s-line" style="color:var(--text3)"></i></div></div>`; }).join(''); }
+
+// ✅ إصلاح 4: استخدام getBranchPartials في نتائج البحث
+function renderSearchResults(q) {
+  const branches=getAllBranches().filter(b=>b.title.toLowerCase().includes(q)||b.subjectTitle.toLowerCase().includes(q));
+  if(!branches.length) return '<div class="empty-state"><i class="ri-search-line"></i><p>Aucun résultat</p></div>';
+  return branches.map(b=>{
+    const meta=subjMeta(b.subjectId);
+    const allPartials=getBranchPartials(b.id);
+    const doneCount=allPartials.filter(p=>isCompleted(p.id)).length;
+    return `<div class="subject-card" style="margin-bottom:8px"><div class="subject-header" onclick="nav('branch:${b.id}')"><div class="subject-icon" style="background:${meta.color?meta.color+'33':'rgba(108,99,255,0.15)'};color:${meta.color||'#6c63ff'}"><i class="${meta.icon}"></i></div><div class="subject-info"><div class="subject-name">${escHtml(b.title)}</div><div class="subject-progress">${escHtml(b.subjectTitle)} · ${doneCount}/${allPartials.length}</div></div><i class="ri-arrow-right-s-line" style="color:var(--text3)"></i></div></div>`;
+  }).join('');
+}
+
+// ✅ إصلاح 1: استخدام getAllPartials لحساب التقدم في عرض المواد والفئات
 function renderCategoryList() {
   const subjects = getSubjects();
-  const totalP = subjects.reduce((s,subj)=>(subj.units||[]).reduce((s2,u)=>(u.lessons||[]).reduce((s3,l)=>(l.branches||[]).reduce((s4,b)=>s4+(b.partials||[]).length,0),0),0),0);
-  const doneP = subjects.reduce((s,subj)=>(subj.units||[]).reduce((s2,u)=>(u.lessons||[]).reduce((s3,l)=>(l.branches||[]).reduce((s4,b)=>s4+(b.partials||[]).filter(p=>isCompleted(p.id)).length,0),0),0),0);
+  const allP=getAllPartials();
+  const totalP=allP.length;
+  const doneP=allP.filter(p=>isCompleted(p.id)).length;
   let html = `<div class="category-block"><div class="category-header"><i class="ri-folder-line" style="font-size:20px"></i><span class="category-header-text">Option Radiologique</span><span class="category-badge">${doneP}/${totalP}</span></div>`;
   subjects.forEach(s => html += renderSubject(s));
   html += `</div><button class="save-notes-btn" onclick="openSubjectModal()" style="margin-top:8px;width:100%"><i class="ri-add-line"></i> Ajouter un module</button>`;
   return html;
 }
-function renderSubject(s) { const meta=s; const pct=calcSubjectProgress(s.id); const allP=(s.units||[]).reduce((s1,u)=>(u.lessons||[]).reduce((s2,l)=>(l.branches||[]).reduce((s3,b)=>s3+(b.partials||[]).length,0),0),0); const doneP=(s.units||[]).reduce((s1,u)=>(u.lessons||[]).reduce((s2,l)=>(l.branches||[]).reduce((s3,b)=>s3+(b.partials||[]).filter(p=>isCompleted(p.id)).length,0),0),0); return `<div class="subject-card" data-subject-id="${s.id}"><div class="subject-header"><div class="subject-icon" style="background:${meta.color?meta.color+'33':'rgba(108,99,255,0.15)'};color:${meta.color||'#6c63ff'}" onclick="toggleSubjectExpand('${s.id}')"><i class="${meta.icon}"></i></div><div class="subject-info" onclick="toggleSubjectExpand('${s.id}')"><div class="subject-name">${escHtml(s.title)}</div><div class="subject-progress">${doneP}/${allP} · ${pct}%</div></div><button class="subject-edit-btn" onclick="event.stopPropagation();openSubjectModal('${s.id}')" title="Modifier le module"><i class="ri-pencil-line"></i></button><i class="ri-arrow-right-s-line subject-chevron" id="chevron-subj-${s.id}" onclick="toggleSubjectExpand('${s.id}')"></i></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div><div class="subject-body" id="body-subj-${s.id}">${(s.units||[]).map(u=>renderUnit(u)).join('')}</div></div>`; }
-function renderUnit(u) { return `<div class="unit-block"><div class="unit-header" onclick="toggleUnitExpand('${u.id}')"><i class="ri-arrow-right-s-line unit-chevron" id="chevron-unit-${u.id}"></i><span class="unit-title">${escHtml(u.title)}</span></div><div class="unit-body" id="body-unit-${u.id}">${(u.lessons||[]).map(l=>`<div class="lesson-item"><div class="lesson-title"><i class="ri-book-2-line"></i>${escHtml(l.title)}</div>${(l.branches||[]).map(b=>{ const ps=b.partials||[]; const done=ps.filter(p=>isCompleted(p.id)).length; const isDone=done===ps.length&&ps.length>0,isPartial=done>0&&done<ps.length; return `<div class="branch-item" onclick="nav('branch:${b.id}')"><div class="branch-dot ${isDone?'done':isPartial?'partial':''}"></div><span class="branch-name">${escHtml(b.title)}</span><span class="branch-count">${done}/${ps.length}</span><i class="ri-arrow-right-s-line branch-arrow"></i></div>`; }).join('')}</div>`).join('')}</div></div>`; }
+function renderSubject(s) {
+  const meta=s;
+  const pct=calcSubjectProgress(s.id);
+  const subjectPartials=getAllPartials().filter(p=>p.subjectId===s.id);
+  const doneP=subjectPartials.filter(p=>isCompleted(p.id)).length;
+  const allP=subjectPartials.length;
+  return `<div class="subject-card" data-subject-id="${s.id}"><div class="subject-header"><div class="subject-icon" style="background:${meta.color?meta.color+'33':'rgba(108,99,255,0.15)'};color:${meta.color||'#6c63ff'}" onclick="toggleSubjectExpand('${s.id}')"><i class="${meta.icon}"></i></div><div class="subject-info" onclick="toggleSubjectExpand('${s.id}')"><div class="subject-name">${escHtml(s.title)}</div><div class="subject-progress">${doneP}/${allP} · ${pct}%</div></div><button class="subject-edit-btn" onclick="event.stopPropagation();openSubjectModal('${s.id}')" title="Modifier le module" aria-label="Modifier le module"><i class="ri-pencil-line"></i></button><i class="ri-arrow-right-s-line subject-chevron" id="chevron-subj-${s.id}" onclick="toggleSubjectExpand('${s.id}')"></i></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div><div class="subject-body" id="body-subj-${s.id}">${(s.units||[]).map(u=>renderUnit(u)).join('')}</div></div>`;
+}
+function renderUnit(u) { return `<div class="unit-block"><div class="unit-header" onclick="toggleUnitExpand('${u.id}')"><i class="ri-arrow-right-s-line unit-chevron" id="chevron-unit-${u.id}"></i><span class="unit-title">${escHtml(u.title)}</span></div><div class="unit-body" id="body-unit-${u.id}">${(u.lessons||[]).map(l=>`<div class="lesson-item"><div class="lesson-title"><i class="ri-book-2-line"></i>${escHtml(l.title)}</div>${(l.branches||[]).map(b=>{ const ps=getBranchPartials(b.id); const done=ps.filter(p=>isCompleted(p.id)).length; const isDone=done===ps.length&&ps.length>0,isPartial=done>0&&done<ps.length; return `<div class="branch-item" onclick="nav('branch:${b.id}')"><div class="branch-dot ${isDone?'done':isPartial?'partial':''}"></div><span class="branch-name">${escHtml(b.title)}</span><span class="branch-count">${done}/${ps.length}</span><i class="ri-arrow-right-s-line branch-arrow"></i></div>`; }).join('')}</div>`).join('')}</div></div>`; }
 function toggleSubjectExpand(id) { const b=document.getElementById('body-subj-'+id),c=document.getElementById('chevron-subj-'+id); if(!b) return; if(b.classList.contains('open')){ b.classList.remove('open'); if(c) c.classList.remove('open'); expandedSubjects.delete(id); } else { b.classList.add('open'); if(c) c.classList.add('open'); expandedSubjects.add(id); } }
 function toggleUnitExpand(id) { const b=document.getElementById('body-unit-'+id),c=document.getElementById('chevron-unit-'+id); if(!b) return; if(b.classList.contains('open')){ b.classList.remove('open'); if(c) c.classList.remove('open'); expandedUnits.delete(id); } else { b.classList.add('open'); if(c) c.classList.add('open'); expandedUnits.add(id); } }
 function restoreExpandState() { expandedSubjects.forEach(id=>{ const b=document.getElementById('body-subj-'+id),c=document.getElementById('chevron-subj-'+id); if(b) b.classList.add('open'); if(c) c.classList.add('open'); }); expandedUnits.forEach(id=>{ const b=document.getElementById('body-unit-'+id),c=document.getElementById('chevron-unit-'+id); if(b) b.classList.add('open'); if(c) c.classList.add('open'); }); }
 
 // ========== BRANCH VIEW ==========
-function renderBranch(branchId) { const branch=findBranch(branchId); if(!branch) return '<div class="page-inner"><p>Branche introuvable</p></div>'; const bp=calcBranchProgress(branchId); return `<div class="page-inner"><div class="branch-header-card"><div class="branch-breadcrumb">Option Radiologique / ${escHtml(branch.subjectTitle)}</div><div class="branch-main-title">${escHtml(branch.title)}</div><div class="branch-progress-row"><div class="branch-progress-bar"><div class="progress-bar-fill" style="width:${bp.pct}%"></div></div><span class="branch-progress-val">${bp.done}/${bp.total}</span></div></div><div class="partial-list">${getBranchPartials(branchId).map((p,i)=>renderPartialCard(p,i)).join('')}</div><div class="add-partial-row" style="margin-top:16px;display:flex;gap:8px;"><input class="add-exercise-input" id="add-partial-input-${branchId}" placeholder="Nouvelle fiche..." style="flex:1" onkeydown="if(event.key==='Enter')addPartial('${branchId}')"/><button class="add-exercise-btn" onclick="addPartial('${branchId}')"><i class="ri-add-line"></i> Ajouter</button></div></div>`; }
-function renderPartialCard(p,i) { const done=isCompleted(p.id),rc=getReviewCount(p.id),isCustom=p.id.startsWith('custom-'); return `<div class="partial-card ${done?'completed':''}" id="pc-${p.id}"><div class="partial-header" onclick="togglePartial('${p.id}')"><div class="partial-check ${done?'done':''}" id="chk-${p.id}">${done?'<i class="ri-check-line"></i>':''}</div><div class="partial-info"><div class="partial-title">${escHtml(p.title)} ${isCustom?'<span style="font-size:10px;opacity:0.6">(perso)</span>':''}</div><div class="partial-meta">${done?'<span class="chip chip-green"><i class="ri-check-line"></i> Complété</span>':'<span class="chip chip-accent"><i class="ri-time-line"></i> En cours</span>'}${rc>0?`<span class="chip chip-yellow"><i class="ri-restart-line"></i> ${rc} révisions</span>`:''}</div></div>${isCustom?`<button class="delete-partial-btn" onclick="event.stopPropagation();deletePartial('${p.id}')" title="Supprimer"><i class="ri-delete-bin-line"></i></button>`:''}<i class="ri-arrow-down-s-line" id="chevron-${p.id}" style="color:var(--text3);font-size:20px;transition:transform 0.2s"></i></div><div class="partial-body" id="pb-${p.id}"><div class="tab-bar"><button class="tab-btn active" id="tab-notes-${p.id}" onclick="switchTab('${p.id}','notes')"><i class="ri-file-text-line"></i> Notes</button><button class="tab-btn" id="tab-exercises-${p.id}" onclick="switchTab('${p.id}','exercises')"><i class="ri-todo-line"></i> Exercices</button><button class="tab-btn" id="tab-review-${p.id}" onclick="switchTab('${p.id}','review')"><i class="ri-restart-line"></i> Révision</button></div><div id="tab-content-${p.id}">${renderNotesTab(p.id)}</div><div class="complete-btn-wrap"><button class="complete-btn ${done?'done':'undone'}" id="cbtn-${p.id}" onclick="toggleComplete('${p.id}')">${done?'<i class="ri-checkbox-circle-fill"></i> Annuler':'<i class="ri-checkbox-circle-line"></i> Marquer complété'}</button></div></div></div>`; }
+// ✅ إصلاح 6: حفظ حالة التوسيع والتبويبات النشطة
+const expandedPartials = new Set();
+const activePartialTabs = {}; // { pid: 'notes'|'exercises'|'review' }
+
+function renderBranch(branchId) {
+  const branch=findBranch(branchId);
+  if(!branch) return '<div class="page-inner"><p>Branche introuvable</p></div>';
+  const bp=calcBranchProgress(branchId);
+  const html = `<div class="page-inner"><div class="branch-header-card"><div class="branch-breadcrumb">Option Radiologique / ${escHtml(branch.subjectTitle)}</div><div class="branch-main-title">${escHtml(branch.title)}</div><div class="branch-progress-row"><div class="branch-progress-bar"><div class="progress-bar-fill" style="width:${bp.pct}%"></div></div><span class="branch-progress-val">${bp.done}/${bp.total}</span></div></div><div class="partial-list">${getBranchPartials(branchId).map((p,i)=>renderPartialCard(p,i)).join('')}</div><div class="add-partial-row" style="margin-top:16px;display:flex;gap:8px;"><input class="add-exercise-input" id="add-partial-input-${branchId}" placeholder="Nouvelle fiche..." style="flex:1" onkeydown="if(event.key==='Enter')addPartial('${branchId}')" aria-label="Nouvelle fiche"/><button class="add-exercise-btn" onclick="addPartial('${branchId}')"><i class="ri-add-line"></i> Ajouter</button></div></div>`;
+  // استعادة الحالة بعد توليد HTML
+  setTimeout(() => restoreBranchState(), 0);
+  return html;
+}
+
+function restoreBranchState() {
+  expandedPartials.forEach(pid => {
+    const body = document.getElementById('pb-' + pid);
+    const chevron = document.getElementById('chevron-' + pid);
+    if (body) {
+      body.classList.add('open');
+      if (chevron) chevron.style.transform = 'rotate(180deg)';
+      // استعادة التبويب النشط
+      const tab = activePartialTabs[pid] || 'notes';
+      switchTab(pid, tab);
+    }
+  });
+}
+
+function renderPartialCard(p,i) {
+  const done=isCompleted(p.id),rc=getReviewCount(p.id),isCustom=p.id.startsWith('custom-');
+  const isOpen = expandedPartials.has(p.id);
+  return `<div class="partial-card ${done?'completed':''}" id="pc-${p.id}"><div class="partial-header" onclick="togglePartial('${p.id}')"><div class="partial-check ${done?'done':''}" id="chk-${p.id}">${done?'<i class="ri-check-line"></i>':''}</div><div class="partial-info"><div class="partial-title">${escHtml(p.title)} ${isCustom?'<span style="font-size:10px;opacity:0.6">(perso)</span>':''}</div><div class="partial-meta">${done?'<span class="chip chip-green"><i class="ri-check-line"></i> Complété</span>':'<span class="chip chip-accent"><i class="ri-time-line"></i> En cours</span>'}${rc>0?`<span class="chip chip-yellow"><i class="ri-restart-line"></i> ${rc} révisions</span>`:''}</div></div>${isCustom?`<button class="delete-partial-btn" onclick="event.stopPropagation();deletePartial('${p.id}')" title="Supprimer" aria-label="Supprimer la fiche"><i class="ri-delete-bin-line"></i></button>`:''}<i class="ri-arrow-down-s-line" id="chevron-${p.id}" style="color:var(--text3);font-size:20px;transition:transform 0.2s;${isOpen?'transform:rotate(180deg)':''}"></i></div><div class="partial-body${isOpen?' open':''}" id="pb-${p.id}"><div class="tab-bar"><button class="tab-btn${(!activePartialTabs[p.id]||activePartialTabs[p.id]==='notes')?' active':''}" id="tab-notes-${p.id}" onclick="switchTab('${p.id}','notes')"><i class="ri-file-text-line"></i> Notes</button><button class="tab-btn${activePartialTabs[p.id]==='exercises'?' active':''}" id="tab-exercises-${p.id}" onclick="switchTab('${p.id}','exercises')"><i class="ri-todo-line"></i> Exercices</button><button class="tab-btn${activePartialTabs[p.id]==='review'?' active':''}" id="tab-review-${p.id}" onclick="switchTab('${p.id}','review')"><i class="ri-restart-line"></i> Révision</button></div><div id="tab-content-${p.id}">${isOpen ? renderTabContent(p.id, activePartialTabs[p.id]||'notes') : renderNotesTab(p.id)}</div><div class="complete-btn-wrap"><button class="complete-btn ${done?'done':'undone'}" id="cbtn-${p.id}" onclick="toggleComplete('${p.id}')">${done?'<i class="ri-checkbox-circle-fill"></i> Annuler':'<i class="ri-checkbox-circle-line"></i> Marquer complété'}</button></div></div></div>`;
+}
+
+function renderTabContent(pid, tab) {
+  if (tab === 'notes') return renderNotesTab(pid);
+  if (tab === 'exercises') return renderExercisesTab(pid);
+  if (tab === 'review') return renderReviewTab(pid);
+  return renderNotesTab(pid);
+}
+
 function addPartial(branchId) { const input=document.getElementById('add-partial-input-'+branchId); if(!input||!input.value.trim()) return; addCustomPartial(branchId,input.value.trim()); input.value=''; document.getElementById('page-content').innerHTML=renderBranch(branchId); showToast('Fiche ajoutée'); }
 function deletePartial(pid) { if(!confirm('Supprimer cette fiche ?')) return; deleteCustomPartial(pid); const currentBranchId=currentPage.replace('branch:',''); document.getElementById('page-content').innerHTML=renderBranch(currentBranchId); showToast('Fiche supprimée'); }
-function togglePartial(pid) { const body=document.getElementById('pb-'+pid),chevron=document.getElementById('chevron-'+pid); if(!body) return; const isOpen=body.classList.contains('open'); document.querySelectorAll('.partial-body.open').forEach(el=>el.classList.remove('open')); document.querySelectorAll('[id^="chevron-"]').forEach(el=>el.style.transform=''); if(!isOpen){ body.classList.add('open'); if(chevron) chevron.style.transform='rotate(180deg)'; } }
-function switchTab(pid,tab) { ['notes','exercises','review'].forEach(t=>{ const btn=document.getElementById(`tab-${t}-${pid}`); if(btn) btn.classList.toggle('active',t===tab); }); const area=document.getElementById('tab-content-'+pid); if(!area) return; if(tab==='notes') area.innerHTML=renderNotesTab(pid); else if(tab==='exercises') area.innerHTML=renderExercisesTab(pid); else if(tab==='review') area.innerHTML=renderReviewTab(pid); }
-function renderNotesTab(pid) { const notes=getNotes(pid); return `<div class="content-area"><textarea class="notes-textarea" id="notes-ta-${pid}" placeholder="Ajoutez vos notes...">${escHtml(notes)}</textarea><button class="save-notes-btn" onclick="saveNotes('${pid}')"><i class="ri-save-line"></i> Enregistrer</button></div>`; }
-function renderExercisesTab(pid) { const exs=getExercises(pid); return `<div class="exercises-area">${exs.length?exs.map((ex,i)=>`<div class="exercise-item"><div class="exercise-check ${ex.done?'done':''}" onclick="toggleExercise('${pid}',${i})">${ex.done?'<i class="ri-check-line"></i>':''}</div><div class="exercise-text" style="${ex.done?'text-decoration:line-through;opacity:0.5':''}">${escHtml(ex.text)}</div><button style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px" onclick="deleteExercise('${pid}',${i})"><i class="ri-delete-bin-line"></i></button></div>`).join(''):'<p style="font-size:13px;color:var(--text3);text-align:center;padding:16px">Aucun exercice</p>'}<div class="add-exercise-row"><input class="add-exercise-input" id="ex-input-${pid}" placeholder="Nouvel exercice..." onkeydown="if(event.key==='Enter')addExercise('${pid}')"/><button class="add-exercise-btn" onclick="addExercise('${pid}')"><i class="ri-add-line"></i></button></div></div>`; }
+function togglePartial(pid) {
+  const body=document.getElementById('pb-'+pid),chevron=document.getElementById('chevron-'+pid);
+  if(!body) return;
+  if(body.classList.contains('open')){
+    body.classList.remove('open');
+    if(chevron) chevron.style.transform='';
+    expandedPartials.delete(pid);
+  } else {
+    body.classList.add('open');
+    if(chevron) chevron.style.transform='rotate(180deg)';
+    expandedPartials.add(pid);
+    // تحميل التبويب النشط
+    const tab = activePartialTabs[pid] || 'notes';
+    switchTab(pid, tab);
+  }
+}
+function switchTab(pid,tab) {
+  activePartialTabs[pid] = tab;
+  ['notes','exercises','review'].forEach(t=>{ const btn=document.getElementById(`tab-${t}-${pid}`); if(btn) btn.classList.toggle('active',t===tab); });
+  const area=document.getElementById('tab-content-'+pid);
+  if(!area) return;
+  if(tab==='notes') area.innerHTML=renderNotesTab(pid);
+  else if(tab==='exercises') area.innerHTML=renderExercisesTab(pid);
+  else if(tab==='review') area.innerHTML=renderReviewTab(pid);
+}
+function renderNotesTab(pid) { const notes=getNotes(pid); return `<div class="content-area"><textarea class="notes-textarea" id="notes-ta-${pid}" placeholder="Ajoutez vos notes..." aria-label="Notes">${escHtml(notes)}</textarea><button class="save-notes-btn" onclick="saveNotes('${pid}')"><i class="ri-save-line"></i> Enregistrer</button></div>`; }
+function renderExercisesTab(pid) { const exs=getExercises(pid); return `<div class="exercises-area">${exs.length?exs.map((ex,i)=>`<div class="exercise-item"><div class="exercise-check ${ex.done?'done':''}" onclick="toggleExercise('${pid}',${i})">${ex.done?'<i class="ri-check-line"></i>':''}</div><div class="exercise-text" style="${ex.done?'text-decoration:line-through;opacity:0.5':''}">${escHtml(ex.text)}</div><button style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px" onclick="deleteExercise('${pid}',${i})" aria-label="Supprimer l'exercice"><i class="ri-delete-bin-line"></i></button></div>`).join(''):'<p style="font-size:13px;color:var(--text3);text-align:center;padding:16px">Aucun exercice</p>'}<div class="add-exercise-row"><input class="add-exercise-input" id="ex-input-${pid}" placeholder="Nouvel exercice..." onkeydown="if(event.key==='Enter')addExercise('${pid}')" aria-label="Nouvel exercice"/><button class="add-exercise-btn" onclick="addExercise('${pid}')"><i class="ri-add-line"></i></button></div></div>`; }
 function renderReviewTab(pid) { const rc=getReviewCount(pid); return `<div class="review-section"><div class="review-count">Révisions : <strong>${rc}</strong></div><button class="review-btn" onclick="addReview('${pid}')"><i class="ri-restart-line"></i> Ajouter une révision</button></div>`; }
 function saveNotes(pid) { const ta=document.getElementById('notes-ta-'+pid); if(!ta) return; setNotes(pid,ta.value); showToast('Notes enregistrées'); }
 function addExercise(pid) { const input=document.getElementById('ex-input-'+pid); if(!input||!input.value.trim()) return; const exs=getExercises(pid); exs.push({text:input.value.trim(),done:false}); setExercises(pid,exs); switchTab(pid,'exercises'); showToast('Exercice ajouté'); }
@@ -452,15 +552,16 @@ function toggleComplete(pid) { const done=isCompleted(pid); const now=new Date()
 
 // ========== SCHEDULE ==========
 let selectedDay=todayKey();
-function renderSchedule() { const today=new Date(); const dn=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam']; const schedule=LS.get(KEY_SCHEDULE,{}); const days=[]; for(let i=-3;i<=3;i++){ const d=new Date(today); d.setDate(today.getDate()+i); const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; days.push({key,dayName:dn[d.getDay()],dayNum:d.getDate(),isToday:i===0,hasSessions:!!(schedule[key]&&schedule[key].length)}); } const allSubjects=getSubjects(); const sessions=schedule[selectedDay]||[]; return `<div class="page-inner"><div class="section-title">Semaine en cours</div><div class="week-grid">${days.map(d=>`<div class="day-cell ${d.isToday?'today':''} ${d.key===selectedDay?'active':''} ${d.hasSessions?'has-sessions':''}" onclick="selectDay('${d.key}')"><div class="day-name">${d.dayName}</div><div class="day-num">${d.dayNum}</div><div class="day-dot"></div></div>`).join('')}</div><div class="session-add-card"><div class="session-add-title"><i class="ri-add-circle-line"></i> Ajouter une session</div><div class="session-add-row"><select class="session-select" id="sess-subj">${allSubjects.map(s=>`<option value="${s.id}">${s.title}</option>`).join('')}</select><input type="time" class="session-time-input" id="sess-time" value="09:00"><input type="number" class="session-duration-input" id="sess-duration" placeholder="Heure" min="0.5" max="12" step="0.5" value="1" style="width:80px;"></div><div style="margin-top:8px"><input type="text" class="add-exercise-input" id="sess-note" placeholder="Note optionnelle..." style="width:100%"></div><div style="margin-top:8px"><button class="session-add-submit" onclick="addSession()"><i class="ri-add-line"></i> Ajouter</button></div></div><div class="section-title">Sessions du jour</div><div class="sessions-container">${renderSessionsList(sessions)}</div></div>`; }
-function renderSessionsList(sessions) { if(!sessions.length) return '<div class="empty-state"><i class="ri-calendar-check-line"></i><p>Aucune session</p></div>'; return sessions.map((s,i)=>{ const meta=subjMeta(s.subjectId); const subj=getSubjects().find(x=>x.id===s.subjectId); return `<div class="session-card ${s.completed?'completed':''}" id="session-${i}"><div class="session-time-badge">${s.time}</div><div class="session-info"><div class="session-subject" style="color:${meta.color};${s.completed?'text-decoration:line-through;opacity:0.7':''}">${subj?escHtml(subj.title):escHtml(s.subjectId)}</div>${s.duration?`<div class="session-detail"><i class="ri-time-line"></i> ${s.duration}h</div>`:''}${s.note?`<div class="session-detail">${escHtml(s.note)}</div>`:''}</div><button class="session-complete-btn ${s.completed?'done':''}" onclick="toggleSessionComplete(${i})" title="${s.completed?'Annuler':'Terminé'}"><i class="ri-lg ${s.completed?'ri-checkbox-circle-fill':'ri-checkbox-circle-line'}"></i></button><button class="session-del" onclick="deleteSession(${i})"><i class="ri-delete-bin-line"></i></button></div>`; }).join(''); }
+function renderSchedule() { const today=new Date(); const dn=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam']; const schedule=LS.get(KEY_SCHEDULE,{}); const days=[]; for(let i=-3;i<=3;i++){ const d=new Date(today); d.setDate(today.getDate()+i); const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; days.push({key,dayName:dn[d.getDay()],dayNum:d.getDate(),isToday:i===0,hasSessions:!!(schedule[key]&&schedule[key].length)}); } const allSubjects=getSubjects(); const sessions=schedule[selectedDay]||[]; return `<div class="page-inner"><div class="section-title">Semaine en cours</div><div class="week-grid">${days.map(d=>`<div class="day-cell ${d.isToday?'today':''} ${d.key===selectedDay?'active':''} ${d.hasSessions?'has-sessions':''}" onclick="selectDay('${d.key}')"><div class="day-name">${d.dayName}</div><div class="day-num">${d.dayNum}</div><div class="day-dot"></div></div>`).join('')}</div><div class="session-add-card"><div class="session-add-title"><i class="ri-add-circle-line"></i> Ajouter une session</div><div class="session-add-row"><select class="session-select" id="sess-subj" aria-label="Module">${allSubjects.map(s=>`<option value="${s.id}">${s.title}</option>`).join('')}</select><input type="time" class="session-time-input" id="sess-time" value="09:00" aria-label="Heure"><input type="number" class="session-duration-input" id="sess-duration" placeholder="Heure" min="0.5" max="12" step="0.5" value="1" style="width:80px;" aria-label="Durée"></div><div style="margin-top:8px"><input type="text" class="add-exercise-input" id="sess-note" placeholder="Note optionnelle..." style="width:100%" aria-label="Note"></div><div style="margin-top:8px"><button class="session-add-submit" onclick="addSession()"><i class="ri-add-line"></i> Ajouter</button></div></div><div class="section-title">Sessions du jour</div><div class="sessions-container">${renderSessionsList(sessions)}</div></div>`; }
+function renderSessionsList(sessions) { if(!sessions.length) return '<div class="empty-state"><i class="ri-calendar-check-line"></i><p>Aucune session</p></div>'; return sessions.map((s,i)=>{ const meta=subjMeta(s.subjectId); const subj=getSubjects().find(x=>x.id===s.subjectId); return `<div class="session-card ${s.completed?'completed':''}" id="session-${i}"><div class="session-time-badge">${s.time}</div><div class="session-info"><div class="session-subject" style="color:${meta.color};${s.completed?'text-decoration:line-through;opacity:0.7':''}">${subj?escHtml(subj.title):escHtml(s.subjectId)}</div>${s.duration?`<div class="session-detail"><i class="ri-time-line"></i> ${s.duration}h</div>`:''}${s.note?`<div class="session-detail">${escHtml(s.note)}</div>`:''}</div><button class="session-complete-btn ${s.completed?'done':''}" onclick="toggleSessionComplete(${i})" title="${s.completed?'Annuler':'Terminé'}" aria-label="${s.completed?'Annuler la session':'Marquer comme terminé'}"><i class="ri-lg ${s.completed?'ri-checkbox-circle-fill':'ri-checkbox-circle-line'}"></i></button><button class="session-del" onclick="deleteSession(${i})" aria-label="Supprimer la session"><i class="ri-delete-bin-line"></i></button></div>`; }).join(''); }
 function selectDay(key) { selectedDay=key; document.getElementById('page-content').innerHTML=renderSchedule(); }
 function addSession() { const subjEl=document.getElementById('sess-subj'),timeEl=document.getElementById('sess-time'),durationEl=document.getElementById('sess-duration'),noteEl=document.getElementById('sess-note'); if(!subjEl||!timeEl) return; const duration=durationEl?parseFloat(durationEl.value)||0:0; const schedule=LS.get(KEY_SCHEDULE,{}); if(!schedule[selectedDay]) schedule[selectedDay]=[]; schedule[selectedDay].push({subjectId:subjEl.value,time:timeEl.value,duration,note:noteEl?noteEl.value:'',completed:false}); schedule[selectedDay].sort((a,b)=>a.time.localeCompare(b.time)); LS.set(KEY_SCHEDULE,schedule); document.getElementById('page-content').innerHTML=renderSchedule(); showToast('Session ajoutée'); }
 function toggleSessionComplete(idx) { const schedule=LS.get(KEY_SCHEDULE,{}); if(!schedule[selectedDay]||!schedule[selectedDay][idx]) return; schedule[selectedDay][idx].completed=!schedule[selectedDay][idx].completed; LS.set(KEY_SCHEDULE,schedule); document.getElementById('page-content').innerHTML=renderSchedule(); }
-function deleteSession(idx) { const schedule=LS.get(KEY_SCHEDULE,{}); if(schedule[selectedDay]){ schedule[selectedDay].splice(idx,1); LS.set(KEY_SCHEDULE,schedule); } document.getElementById('page-content').innerHTML=renderSchedule(); }
+// ✅ إصلاح 7: إضافة تأكيد قبل حذف الجلسة
+function deleteSession(idx) { if(!confirm('Supprimer cette session ?')) return; const schedule=LS.get(KEY_SCHEDULE,{}); if(schedule[selectedDay]){ schedule[selectedDay].splice(idx,1); LS.set(KEY_SCHEDULE,schedule); } document.getElementById('page-content').innerHTML=renderSchedule(); showToast('Session supprimée'); }
 
 // ========== STATS ==========
-function renderStats() { const overall=calcOverallProgress(); const allSubjects=getSubjects(); const today=new Date(); const activity=LS.get(KEY_ACTIVITY,{}); const heatCells=[]; for(let i=90;i>=0;i--){ const d=new Date(today); d.setDate(today.getDate()-i); const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; const min=activity[key]||0; const lvl=min===0?0:min<30?1:min<60?2:min<120?3:4; heatCells.push(`<div class="heat-cell" data-lvl="${lvl}" title="${key}: ${Math.round(min)}min"></div>`); } return `<div class="page-inner"><div class="stats-hero-row"><div class="stats-mini"><div class="stats-mini-val text-accent">${overall.pct}%</div><div class="stats-mini-lbl">Progression</div></div><div class="stats-mini"><div class="stats-mini-val text-green">${overall.done}</div><div class="stats-mini-lbl">Complétés</div></div></div><div class="section-title">Progression par module</div><div class="subjects-progress">${allSubjects.map(s=>{ const pct=calcSubjectProgress(s.id); const meta=s; const allP=(s.units||[]).reduce((s1,u)=>(u.lessons||[]).reduce((s2,l)=>(l.branches||[]).reduce((s3,b)=>s3+(b.partials||[]).length,0),0),0); const doneP=(s.units||[]).reduce((s1,u)=>(u.lessons||[]).reduce((s2,l)=>(l.branches||[]).reduce((s3,b)=>s3+(b.partials||[]).filter(p=>isCompleted(p.id)).length,0),0),0); return `<div class="subj-progress-item"><div class="subj-progress-top"><span class="subj-progress-name"><i class="${meta.icon}" style="color:${meta.color};margin-right:6px"></i>${escHtml(s.title)}</span><span class="subj-progress-pct">${pct}%</span></div><div class="progress-bar-wrap" style="height:8px;border-radius:4px"><div class="progress-bar-fill" style="width:${pct}%;background:${meta.color};border-radius:4px"></div></div><div style="font-size:11px;color:var(--text3);margin-top:4px">${doneP}/${allP}</div></div>`; }).join('')}</div><div class="section-title">Activité (91 jours)</div><div class="heatmap-grid">${heatCells.join('')}</div><div class="heatmap-legend"><span>Moins</span><div class="heatmap-legend-cell" style="background:var(--bg3)"></div><div class="heatmap-legend-cell" data-lvl="1" style="background:rgba(108,99,255,0.25)"></div><div class="heatmap-legend-cell" data-lvl="2" style="background:rgba(108,99,255,0.5)"></div><div class="heatmap-legend-cell" data-lvl="3" style="background:rgba(108,99,255,0.75)"></div><div class="heatmap-legend-cell" data-lvl="4" style="background:var(--accent)"></div><span>Plus</span></div></div>`; }
+function renderStats() { const overall=calcOverallProgress(); const allSubjects=getSubjects(); const today=new Date(); const activity=LS.get(KEY_ACTIVITY,{}); const heatCells=[]; for(let i=90;i>=0;i--){ const d=new Date(today); d.setDate(today.getDate()-i); const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; const min=activity[key]||0; const lvl=min===0?0:min<30?1:min<60?2:min<120?3:4; heatCells.push(`<div class="heat-cell" data-lvl="${lvl}" title="${key}: ${Math.round(min)}min"></div>`); } return `<div class="page-inner"><div class="stats-hero-row"><div class="stats-mini"><div class="stats-mini-val text-accent">${overall.pct}%</div><div class="stats-mini-lbl">Progression</div></div><div class="stats-mini"><div class="stats-mini-val text-green">${overall.done}</div><div class="stats-mini-lbl">Complétés</div></div></div><div class="section-title">Progression par module</div><div class="subjects-progress">${allSubjects.map(s=>{ const pct=calcSubjectProgress(s.id); const meta=s; const subjectPartials=getAllPartials().filter(p=>p.subjectId===s.id); const doneP=subjectPartials.filter(p=>isCompleted(p.id)).length; const allP=subjectPartials.length; return `<div class="subj-progress-item"><div class="subj-progress-top"><span class="subj-progress-name"><i class="${meta.icon}" style="color:${meta.color};margin-right:6px"></i>${escHtml(s.title)}</span><span class="subj-progress-pct">${pct}%</span></div><div class="progress-bar-wrap" style="height:8px;border-radius:4px"><div class="progress-bar-fill" style="width:${pct}%;background:${meta.color};border-radius:4px"></div></div><div style="font-size:11px;color:var(--text3);margin-top:4px">${doneP}/${allP}</div></div>`; }).join('')}</div><div class="section-title">Activité (91 jours)</div><div class="heatmap-grid">${heatCells.join('')}</div><div class="heatmap-legend"><span>Moins</span><div class="heatmap-legend-cell" style="background:var(--bg3)"></div><div class="heatmap-legend-cell" data-lvl="1" style="background:rgba(108,99,255,0.25)"></div><div class="heatmap-legend-cell" data-lvl="2" style="background:rgba(108,99,255,0.5)"></div><div class="heatmap-legend-cell" data-lvl="3" style="background:rgba(108,99,255,0.75)"></div><div class="heatmap-legend-cell" data-lvl="4" style="background:var(--accent)"></div><span>Plus</span></div></div>`; }
 
 // ========== SUBJECT MODAL ==========
 function openSubjectModal(subjectId) {
@@ -480,9 +581,9 @@ function openSubjectModal(subjectId) {
   }
 }
 function closeSubjectModal() { document.getElementById('subject-modal').classList.remove('open'); }
-function renderIconGrid() { const grid = document.getElementById('icon-select-grid'); grid.innerHTML = ICON_OPTIONS.map(ic => `<div class="icon-option" data-icon="${ic}" onclick="selectIcon('${ic}')"><i class="${ic}"></i></div>`).join(''); }
+function renderIconGrid() { const grid = document.getElementById('icon-select-grid'); grid.innerHTML = ICON_OPTIONS.map(ic => `<div class="icon-option" data-icon="${ic}" onclick="selectIcon('${ic}')" role="button" tabindex="0" aria-label="Icône ${ic}"><i class="${ic}"></i></div>`).join(''); }
 function selectIcon(icon) { document.getElementById('subject-icon-input').value = icon; document.querySelectorAll('#icon-select-grid .icon-option').forEach(el => el.classList.toggle('selected', el.dataset.icon === icon)); }
-function renderColorGrid() { const grid = document.getElementById('color-select-grid'); grid.innerHTML = COLOR_OPTIONS.map(c => `<div class="color-option" style="background:${c}" data-color="${c}" onclick="selectColor('${c}')"></div>`).join(''); }
+function renderColorGrid() { const grid = document.getElementById('color-select-grid'); grid.innerHTML = COLOR_OPTIONS.map(c => `<div class="color-option" style="background:${c}" data-color="${c}" onclick="selectColor('${c}')" role="button" tabindex="0" aria-label="Couleur ${c}"></div>`).join(''); }
 function selectColor(color) { document.getElementById('subject-color-input').value = color; document.querySelectorAll('#color-select-grid .color-option').forEach(el => el.classList.toggle('selected', el.dataset.color === color)); }
 function saveSubjectFromModal() {
   const name = document.getElementById('subject-name-input').value.trim();
@@ -492,7 +593,7 @@ function saveSubjectFromModal() {
   const color = document.getElementById('subject-color-input').value;
   let subjects = getSubjects();
   if (id) { subjects = subjects.map(s => s.id === id ? { ...s, title: name, icon, color } : s); }
-  else { const newId = 'subj-' + Date.now(); subjects.push({ id: newId, title: name, icon, color, units: [{ id: "u-" + newId, title: "Général", lessons: [{ id: "l-" + newId, title: "Cours", branches: [{ id: "b-" + newId, title: "Chapitre 1", partials: [] }] }] }] }); }
+  else { const newId = 'subj-' + Date.now(); subjects.push({ id: newId, title: name, icon, color, units: [{ id: "u-" + newId, title: "Général", lessons: [{ id: "l-" + newId, title: "Cours", branches: [{ id: "b-" + newId, title: "Chapitre 1", partials: createDefaultPartials(newId) }] }] }] }); }
   saveSubjects(subjects); closeSubjectModal(); if (currentPage === 'subjects') { document.getElementById('page-content').innerHTML = renderSubjects(); updateSubjectsResults(); } showToast(id ? 'Module modifié' : 'Module ajouté');
 }
 
@@ -510,10 +611,11 @@ function saveWeeklyGoalFromModal() { const ids=[...document.querySelectorAll('#g
 // ========== CHECKLIST ==========
 function openChecklistModal() { document.getElementById('checklist-modal').classList.add('open'); renderChecklist(); }
 function closeChecklistModal() { document.getElementById('checklist-modal').classList.remove('open'); updateGoalCardDisplay(); }
-function renderChecklist() { const goal=getWeeklyGoal(); const body=document.getElementById('checklist-body'); if(!goal||!goal.partials.length){ body.innerHTML='<p style="text-align:center;padding:20px">Aucune tâche</p>'; return; } const allP=getAllPartials(); body.innerHTML=goal.partials.map(pid=>{ const p=allP.find(pp=>pp.id===pid); if(!p) return ''; const done=isCompleted(pid); return `<div class="checklist-item"><div class="checklist-item-actions"><div class="checklist-checkbox ${done?'checked':''}" onclick="toggleChecklistItem('${pid}')">${done?'<i class="ri-check-line" style="font-size:14px"></i>':''}</div><button class="checklist-delete-btn" onclick="removeChecklistItem('${pid}')"><i class="ri-delete-bin-line"></i></button></div><div class="checklist-item-title">${escHtml(p.title)}</div><div class="checklist-item-sub">${escHtml(p.subjectTitle)}</div></div>`; }).join(''); }
+function renderChecklist() { const goal=getWeeklyGoal(); const body=document.getElementById('checklist-body'); if(!goal||!goal.partials.length){ body.innerHTML='<p style="text-align:center;padding:20px">Aucune tâche</p>'; return; } const allP=getAllPartials(); body.innerHTML=goal.partials.map(pid=>{ const p=allP.find(pp=>pp.id===pid); if(!p) return ''; const done=isCompleted(pid); return `<div class="checklist-item"><div class="checklist-item-actions"><div class="checklist-checkbox ${done?'checked':''}" onclick="toggleChecklistItem('${pid}')">${done?'<i class="ri-check-line" style="font-size:14px"></i>':''}</div><button class="checklist-delete-btn" onclick="removeChecklistItem('${pid}')" aria-label="Retirer la tâche"><i class="ri-delete-bin-line"></i></button></div><div class="checklist-item-title">${escHtml(p.title)}</div><div class="checklist-item-sub">${escHtml(p.subjectTitle)}</div></div>`; }).join(''); }
 function toggleChecklistItem(pid) { toggleComplete(pid); renderChecklist(); }
 function removeChecklistItem(pid) { const goal=getWeeklyGoal(); if(!goal) return; goal.partials=goal.partials.filter(id=>id!==pid); if(!goal.partials.length){ clearWeeklyGoal(); closeChecklistModal(); } else LS.set(KEY_WEEKLY_GOAL,goal); renderChecklist(); updateGoalCardDisplay(); }
-function updateGoalCardDisplay() { const card=document.getElementById('goal-card'); if(!card) return; const goal=getWeeklyGoal(); if(!goal){ nav('home',false); return; } const gp=calcGoalProgress(goal); const gr=30,gc=2*Math.PI*gr,goffset=gc-(gp.pct/100)*gc; const allDone=gp.done===gp.total&&gp.total>0; const circleFill=document.getElementById('goal-circle-fill'); if(circleFill){ circleFill.setAttribute('stroke-dashoffset',goffset); circleFill.setAttribute('stroke',allDone?'var(--green)':'var(--accent)'); } const pctSpan=document.getElementById('goal-pct'); if(pctSpan) pctSpan.textContent=gp.pct+'%'; }
+// ✅ إصلاح 3: جعل updateGoalCardDisplay آمنة (تتحقق من وجود العناصر قبل التحديث)
+function updateGoalCardDisplay() { const card=document.getElementById('goal-card'); if(!card) return; const goal=getWeeklyGoal(); if(!goal){ if(currentPage==='home') nav('home',false); return; } const gp=calcGoalProgress(goal); const gr=30,gc=2*Math.PI*gr,goffset=gc-(gp.pct/100)*gc; const allDone=gp.done===gp.total&&gp.total>0; const circleFill=document.getElementById('goal-circle-fill'); if(circleFill){ circleFill.setAttribute('stroke-dashoffset',goffset); circleFill.setAttribute('stroke',allDone?'var(--green)':'var(--accent)'); } const pctSpan=document.getElementById('goal-pct'); if(pctSpan) pctSpan.textContent=gp.pct+'%'; }
 function clearWeeklyGoal() { LS.set(KEY_WEEKLY_GOAL, null); }
 
 function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
