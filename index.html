@@ -7,6 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#6c63ff">
+  <link rel="manifest" id="pwa-manifest">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
   <style>
@@ -424,7 +425,7 @@ const DEFAULT_SUBJECTS = [
   { id: "subj-physIRM", title: "Physique appliquée en IRM", icon: 'ri-flask-line', color: '#ec4899' },
   { id: "subj-protoIRM", title: "Protocoles IRM", icon: 'ri-file-text-line', color: '#14b8a6' },
   { id: "subj-anatphys", title: "Anatomie et physiologie humaine", icon: 'ri-heart-pulse-line', color: '#ef4444' },
-  { id: "subj-anatTopo", title: "Anatomie topographique et radiologique", icon: 'ri-body-scan-line', color: '#f97316' },
+  { id: "subj-anatTopo", title: "Anatomie topographique et radiologique", icon: 'ri-scan-2-line', color: '#f97316' },
   { id: "subj-techAxial", title: "Technique axiale d'exploration radiologique", icon: 'ri-ruler-line', color: '#84cc16' },
   { id: "subj-techApp", title: "Technique appendiculaire d'exploration radiologique", icon: 'ri-tools-line', color: '#06b6d4' },
   { id: "subj-pharmaco", title: "Pharmacologie et technique viscérale", icon: 'ri-capsule-line', color: '#a855f7' },
@@ -434,8 +435,8 @@ const DEFAULT_SUBJECTS = [
   { id: "subj-maintenance", title: "Maintenance, démarche qualité, gestion des risques", icon: 'ri-settings-3-line', color: '#78716c' },
   { id: "subj-radioBio", title: "Radiobiologie et radioprotection", icon: 'ri-shield-flash-line', color: '#ef4444' },
   { id: "subj-echoAngio", title: "Échographie et angiographie", icon: 'ri-pulse-line', color: '#10b981' },
-  { id: "subj-osteoAxiale", title: "Ostéologie axiale", icon: 'ri-skeleton-line', color: '#d97706' },
-  { id: "subj-osteoApp", title: "Ostéologie appendiculaire", icon: 'ri-skeleton-line', color: '#b45309' },
+  { id: "subj-osteoAxiale", title: "Ostéologie axiale", icon: 'ri-accessibility-line', color: '#d97706' },
+  { id: "subj-osteoApp", title: "Ostéologie appendiculaire", icon: 'ri-run-line', color: '#b45309' },
   { id: "subj-mathsPhys", title: "Mathématiques et physique fondamentale", icon: 'ri-calculator-line', color: '#6366f1' },
   { id: "subj-semioPath", title: "Sémiologie et pathologie médicale", icon: 'ri-stethoscope-line', color: '#dc2626' },
   { id: "subj-soinsInf", title: "Soins infirmiers de base et pathologie chirurgicale", icon: 'ri-nurse-line', color: '#0ea5e9' },
@@ -479,11 +480,11 @@ function saveSubjects(subjects) { LS.set(KEY_SUBJECTS, subjects); }
 
 const ICON_OPTIONS = [
   'ri-book-line', 'ri-flashlight-line', 'ri-scan-line', 'ri-file-list-3-line', 'ri-flask-line', 'ri-file-text-line',
-  'ri-heart-pulse-line', 'ri-body-scan-line', 'ri-ruler-line', 'ri-tools-line', 'ri-capsule-line', 'ri-microscope-line',
+  'ri-heart-pulse-line', 'ri-scan-2-line', 'ri-ruler-line', 'ri-tools-line', 'ri-capsule-line', 'ri-microscope-line',
   'ri-government-line', 'ri-chat-3-line', 'ri-settings-3-line', 'ri-shield-flash-line', 'ri-pulse-line',
-  'ri-skeleton-line', 'ri-calculator-line', 'ri-stethoscope-line', 'ri-nurse-line', 'ri-scales-3-line',
-  'ri-pie-chart-line', 'ri-user-heart-line', 'ri-lungs-line', 'ri-brain-line', 'ri-psychotherapy-line',
-  'ri-syringe-line', 'ri-hospital-line', 'ri-first-aid-kit-line', 'ri-thermometer-line', 'ri-test-tube-line'
+  'ri-accessibility-line', 'ri-calculator-line', 'ri-stethoscope-line', 'ri-nurse-line', 'ri-scales-3-line',
+  'ri-pie-chart-line', 'ri-user-heart-line', 'ri-lungs-line', 'ri-lightbulb-line', 'ri-discuss-line',
+  'ri-syringe-line', 'ri-hospital-line', 'ri-health-book-line', 'ri-thermometer-line', 'ri-flask-2-line'
 ];
 
 const COLOR_OPTIONS = [
@@ -546,26 +547,12 @@ function calcBranchProgress(branchId) {
   return {done:d, total:ps.length, pct: Math.round((d/ps.length)*100)}; 
 }
 
-// ✅ إصلاح: حساب التقدم الكلي - كل module له وزن متساوي
+// حساب التقدم الكلي بناءً على الأجزاء المنجزة مقارنة بالإجمالي
 function calcOverallProgress() { 
-  const subjects = getSubjects();
-  if (!subjects.length) return {done:0, total:0, pct:0};
-  
-  // كل module يساهم بنفس الوزن
-  let totalWeight = 0;
-  let earnedWeight = 0;
-  
-  subjects.forEach(s => {
-    const pct = calcSubjectProgress(s.id);
-    totalWeight += 100; // كل module وزنه 100
-    earnedWeight += pct; // النسبة المئوية المحققة
-  });
-  
-  const overallPct = totalWeight > 0 ? Math.round(earnedWeight / subjects.length) : 0;
   const allPartials = getAllPartials();
+  if (!allPartials.length) return {done:0, total:0, pct:0};
   const done = allPartials.filter(p => isCompleted(p.id)).length;
-  
-  return {done, total: allPartials.length, pct: overallPct};
+  return {done, total: allPartials.length, pct: Math.round((done / allPartials.length) * 100)};
 }
 
 function totalReviews() { return Object.values(getProgress()).reduce((s,v)=>s+(v.reviewCount||0),0); }
@@ -1412,6 +1399,82 @@ function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&
   if(goal&&goal.weekMonday!==getWeekKey()) LS.set(KEY_WEEKLY_GOAL,null); 
 })();
 nav('home', false);
+</script>
+
+<script>
+// ===== PWA: أيقونة الشاشة الرئيسية =====
+(function() {
+  try {
+    const size = 512;
+    const canvas = document.createElement('canvas');
+    canvas.width = size; canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    // خلفية متدرجة
+    const grad = ctx.createLinearGradient(0, 0, size, size);
+    grad.addColorStop(0, '#6c63ff');
+    grad.addColorStop(1, '#9c5cf5');
+    ctx.fillStyle = grad;
+    // زوايا دائرية
+    const r = 115;
+    ctx.beginPath();
+    ctx.moveTo(r, 0); ctx.lineTo(size-r, 0);
+    ctx.quadraticCurveTo(size, 0, size, r);
+    ctx.lineTo(size, size-r);
+    ctx.quadraticCurveTo(size, size, size-r, size);
+    ctx.lineTo(r, size);
+    ctx.quadraticCurveTo(0, size, 0, size-r);
+    ctx.lineTo(0, r);
+    ctx.quadraticCurveTo(0, 0, r, 0);
+    ctx.closePath();
+    ctx.fill();
+    // رمز طبي (صليب)
+    ctx.fillStyle = 'rgba(255,255,255,0.95)';
+    const cx = size/2, cy = size/2, arm = 100, thick = 60;
+    ctx.fillRect(cx - thick/2, cy - arm, thick, arm*2);
+    ctx.fillRect(cx - arm, cy - thick/2, arm*2, thick);
+    // حرف Z صغير في الزاوية
+    ctx.font = 'bold 100px sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText('Z', size - 30, size - 20);
+
+    const iconUrl = canvas.toDataURL('image/png');
+
+    // Apple Touch Icon
+    const touchIcon = document.createElement('link');
+    touchIcon.rel = 'apple-touch-icon';
+    touchIcon.sizes = '512x512';
+    touchIcon.href = iconUrl;
+    document.head.appendChild(touchIcon);
+
+    // Favicon
+    const favicon = document.createElement('link');
+    favicon.rel = 'icon';
+    favicon.type = 'image/png';
+    favicon.href = iconUrl;
+    document.head.appendChild(favicon);
+
+    // Web App Manifest (blob URL)
+    const manifest = {
+      name: 'Préparation Zakaria – Option Radiologique',
+      short_name: 'Prép Zakaria',
+      description: 'Application de préparation pour l'option radiologique',
+      start_url: '.',
+      display: 'standalone',
+      orientation: 'portrait',
+      background_color: '#0f0f13',
+      theme_color: '#6c63ff',
+      icons: [
+        { src: iconUrl, sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
+        { src: iconUrl, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+      ]
+    };
+    const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+    const manifestLink = document.getElementById('pwa-manifest');
+    if (manifestLink) manifestLink.href = URL.createObjectURL(blob);
+  } catch(e) { console.warn('PWA setup failed:', e); }
+})();
 </script>
 </body>
 </html>
