@@ -84,7 +84,7 @@
     .search-bar input { flex: 1; background: none; border: none; outline: none; font-family: inherit; font-size: 14px; color: var(--text); }
     .search-bar input::placeholder { color: var(--text3); }
     
-    /* أنماط المجلدات (الشكل الجديد للمواد) */
+    /* أنماط المجلدات */
     .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
     .folder-item { 
       background: var(--bg2); 
@@ -188,13 +188,12 @@
     .file-arrow { color: var(--text3); font-size: 18px; transition: transform 0.15s; }
     .file-item:active .file-arrow { transform: translateX(4px); }
     
-    /* باقي الأنماط من الكود الأصلي */
-    .category-block { margin-bottom: 16px; }
-    .category-header { background: linear-gradient(135deg, var(--accent) 0%, var(--hero-end) 100%); color: #fff; border-radius: var(--radius); padding: 12px 16px; display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 8px; transition: transform 0.15s; }
-    .category-header:active { transform: scale(0.97); }
-    .category-header-text { flex: 1; font-weight: 700; font-size: 16px; }
-    .category-badge { background: rgba(255,255,255,0.2); border-radius: 50px; padding: 2px 10px; font-size: 12px; }
+    /* زر العودة للخلف في عرض المجلد */
+    .folder-breadcrumb { margin-bottom: 12px; }
+    .folder-back-btn { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; font-family: inherit; font-size: 13px; color: var(--text2); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s; }
+    .folder-back-btn:active { background: var(--accent-light); color: var(--accent); transform: scale(0.95); }
     
+    /* أنماط القائمة التقليدية */
     .subject-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 8px; overflow: hidden; transition: transform 0.15s; }
     .subject-card:active { transform: scale(0.99); }
     .subject-header { padding: 12px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; transition: background 0.15s; }
@@ -203,29 +202,10 @@
     .subject-info { flex: 1; min-width: 0; }
     .subject-name { font-weight: 600; font-size: 15px; }
     .subject-progress { font-size: 12px; color: var(--text3); margin-top: 2px; }
-    .subject-chevron { color: var(--text3); font-size: 18px; transition: transform 0.2s; }
-    .subject-chevron.open { transform: rotate(90deg); }
-    .subject-body { display: none; border-top: 1px solid var(--border); }
-    .subject-body.open { display: block; }
     .progress-bar-wrap { height: 4px; background: var(--bg3); }
     .progress-bar-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.4s; }
     
-    .unit-block { border-bottom: 1px solid var(--border); } .unit-block:last-child { border-bottom: none; }
-    .unit-header { padding: 10px 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; transition: background 0.15s; }
-    .unit-header:active { background: var(--bg2); } .unit-title { flex: 1; font-size: 14px; font-weight: 500; color: var(--text); }
-    .unit-chevron { color: var(--text3); font-size: 16px; transition: transform 0.2s; } .unit-chevron.open { transform: rotate(90deg); }
-    .unit-body { display: none; background: var(--bg3); } .unit-body.open { display: block; }
-    .lesson-item { border-bottom: 1px solid var(--border); padding: 8px 14px 8px 24px; } .lesson-item:last-child { border-bottom: none; }
-    .lesson-title { font-size: 13px; color: var(--text2); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
-    .lesson-title i { color: var(--text3); font-size: 14px; }
-    
-    .branch-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; margin: 4px 0; border-radius: var(--radius-sm); cursor: pointer; transition: background 0.15s, transform 0.15s; }
-    .branch-item:active { background: var(--bg2); transform: scale(0.96); }
-    .branch-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; border: 2px solid var(--border); background: var(--bg); transition: all var(--transition); }
-    .branch-dot.done { background: var(--green); border-color: var(--green); } .branch-dot.partial { background: var(--yellow); border-color: var(--yellow); }
-    .branch-name { flex: 1; font-size: 13px; color: var(--text2); } .branch-count { font-size: 11px; color: var(--text3); }
-    .branch-arrow { color: var(--text3); font-size: 14px; transition: transform 0.15s; } .branch-item:active .branch-arrow { transform: translateX(4px); }
-    
+    /* Branch view */
     .branch-header-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
     .branch-breadcrumb { font-size: 12px; color: var(--text3); margin-bottom: 6px; line-height: 1.4; }
     .branch-main-title { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
@@ -241,7 +221,7 @@
     .partial-check { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; margin-top: 1px; }
     .partial-check:active { transform: scale(0.8); background: var(--bg3); } .partial-check.done { background: var(--green); border-color: var(--green); color: #fff; } .partial-check i { font-size: 13px; }
     .partial-info { flex: 1; } .partial-title { font-size: 14px; font-weight: 500; line-height: 1.4; }
-    .partial-meta { font-size: 12px; color: var(--text3); margin-top: 4px; display: flex; gap: 12px; }
+    .partial-meta { font-size: 12px; color: var(--text3); margin-top: 4px; display: flex; gap: 12px; flex-wrap: wrap; }
     .partial-body { display: none; border-top: 1px solid var(--border); padding: 14px; } .partial-body.open { display: block; }
     
     .tab-bar { display: flex; gap: 4px; background: var(--bg3); border-radius: var(--radius-sm); padding: 4px; margin-bottom: 12px; }
@@ -366,16 +346,14 @@
     .color-option { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; transition: all 0.15s; }
     .color-option.selected { border-color: var(--text); transform: scale(1.15); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
     
-    /* أيقونات العرض الجديدة */
     .view-toggle { display: flex; gap: 8px; margin-bottom: 12px; }
     .view-btn { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 12px; font-family: inherit; font-size: 13px; color: var(--text2); cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
     .view-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
     .view-btn:active { transform: scale(0.95); }
     
-    /* زر العودة للخلف في عرض المجلد */
-    .folder-breadcrumb { margin-bottom: 12px; }
-    .folder-back-btn { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; font-family: inherit; font-size: 13px; color: var(--text2); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s; }
-    .folder-back-btn:active { background: var(--accent-light); color: var(--accent); transform: scale(0.95); }
+    .add-branch-inline { display: flex; gap: 8px; margin-bottom: 16px; }
+    .add-branch-inline input { flex: 1; }
+    .add-branch-inline button { flex-shrink: 0; }
   </style>
 </head>
 <body>
@@ -429,8 +407,8 @@ const LS = {
 };
 const KEY_PROGRESS = 'prep_progress', KEY_NOTES = 'prep_notes', KEY_EXERCISES = 'prep_exercises', KEY_ACTIVITY = 'prep_activity';
 const KEY_TIMER = 'prep_timer', KEY_SCHEDULE = 'prep_schedule', KEY_THEME = 'prep_theme', KEY_WEEKLY_GOAL = 'prep_weekly_goal';
-const KEY_CUSTOM_PARTIALS = 'prep_custom_partials', KEY_SUBJECTS = 'prep_subjects_v2';
-const KEY_VIEW_MODE = 'prep_view_mode'; // وضع العرض: 'folders' أو 'list'
+const KEY_CUSTOM_PARTIALS = 'prep_custom_partials', KEY_SUBJECTS = 'prep_subjects_v3';
+const KEY_VIEW_MODE = 'prep_view_mode';
 
 // ========== THEME ==========
 let currentTheme = LS.get(KEY_THEME, 'dark');
@@ -438,7 +416,7 @@ function applyTheme(t) { document.documentElement.setAttribute('data-theme', t);
 function toggleTheme() { currentTheme = currentTheme === 'dark' ? 'light' : 'dark'; LS.set(KEY_THEME, currentTheme); applyTheme(currentTheme); }
 applyTheme(currentTheme);
 
-// ========== DATA (Initiale) ==========
+// ========== DATA (Initiale simplifiée - sans Unit/Lesson) ==========
 const DEFAULT_SUBJECTS = [
   { id: "subj-physradio", title: "Physique appliquée en radiologie", icon: 'ri-flashlight-line', color: '#f59e0b' },
   { id: "subj-physcan", title: "Physique appliquée en scanographie", icon: 'ri-scan-line', color: '#3b82f6' },
@@ -473,11 +451,25 @@ function createDefaultPartials(subjectId) {
 
 function initSubjects() {
   if (!LS.get(KEY_SUBJECTS, null)) {
+    // هيكل مبسط: module يحتوي مباشرة على branches
     const subjectsWithStructure = DEFAULT_SUBJECTS.map(s => ({
       ...s,
-      units: [{ id: "u-" + s.id, title: "Général", lessons: [{ id: "l-" + s.id, title: "Cours", branches: [{ id: "b-" + s.id, title: "Chapitre 1", partials: createDefaultPartials(s.id) }] }] }]
+      branches: [{ id: "b-" + s.id, title: "Chapitre 1", partials: createDefaultPartials(s.id) }]
     }));
     LS.set(KEY_SUBJECTS, subjectsWithStructure);
+  } else {
+    // ترقية البيانات القديمة إذا لزم الأمر
+    const existing = LS.get(KEY_SUBJECTS, []);
+    const needsUpgrade = existing.some(s => s.units && !s.branches);
+    if (needsUpgrade) {
+      const upgraded = existing.map(s => {
+        if (s.branches) return s;
+        const allBranches = [];
+        (s.units||[]).forEach(u => (u.lessons||[]).forEach(l => (l.branches||[]).forEach(b => allBranches.push(b))));
+        return { id: s.id, title: s.title, icon: s.icon, color: s.color, branches: allBranches.length ? allBranches : [{ id: "b-" + s.id, title: "Chapitre 1", partials: createDefaultPartials(s.id) }] };
+      });
+      LS.set(KEY_SUBJECTS, upgraded);
+    }
   }
 }
 initSubjects();
@@ -499,7 +491,7 @@ const COLOR_OPTIONS = [
   '#22c55e', '#64748b', '#2563eb', '#78716c', '#dc2626', '#b45309', '#6366f1', '#0ea5e9', '#4b5563', '#0891b2', '#be185d'
 ];
 
-function subjMeta(id) { return getSubjects().find(s => s.id === id) || { icon: 'ri-book-line', color: '#6c63ff', bg: 'rgba(108,99,255,0.15)' }; }
+function subjMeta(id) { return getSubjects().find(s => s.id === id) || { icon: 'ri-book-line', color: '#6c63ff' }; }
 
 // ========== CUSTOM PARTIALS & HELPERS ==========
 function getCustomPartials() { return LS.get(KEY_CUSTOM_PARTIALS, []); }
@@ -509,13 +501,25 @@ function deleteCustomPartial(id) { const customs = getCustomPartials().filter(p 
 function getAllPartials() {
   const subs = getSubjects();
   const builtin = [];
-  subs.forEach(s => (s.units||[]).forEach(u => (u.lessons||[]).forEach(l => (l.branches||[]).forEach(b => (b.partials||[]).forEach(p => builtin.push({ ...p, branchId: b.id, subjectId: s.id, subjectTitle: s.title })) ))));
+  subs.forEach(s => (s.branches||[]).forEach(b => (b.partials||[]).forEach(p => builtin.push({ ...p, branchId: b.id, subjectId: s.id, subjectTitle: s.title }))));
   const customs = getCustomPartials().map(p => { const b = findBranch(p.branchId); return { ...p, subjectId: b?.subjectId, subjectTitle: b?.subjectTitle || '' }; });
   return [...builtin, ...customs];
 }
-function getAllBranches() { const all = []; getSubjects().forEach(s => (s.units||[]).forEach(u => (u.lessons||[]).forEach(l => (l.branches||[]).forEach(b => all.push({...b, subjectId: s.id, subjectTitle: s.title}))))); return all; }
+function getAllBranches() { const all = []; getSubjects().forEach(s => (s.branches||[]).forEach(b => all.push({...b, subjectId: s.id, subjectTitle: s.title}))); return all; }
 function findBranch(id) { return getAllBranches().find(b => b.id === id); }
 function getBranchPartials(branchId) { const branch = findBranch(branchId); if (!branch) return []; const builtin = branch.partials || []; const customs = getCustomPartials().filter(p => p.branchId === branchId); return [...builtin, ...customs]; }
+
+// ✅ إصلاح: إضافة دالة لإضافة branch جديد مباشرة
+function addBranchToSubject(subjectId, title) {
+  const subjects = getSubjects();
+  const subject = subjects.find(s => s.id === subjectId);
+  if (!subject) return null;
+  if (!subject.branches) subject.branches = [];
+  const branchId = 'b-' + Date.now() + '-' + Math.random().toString(36).substr(2,5);
+  subject.branches.push({ id: branchId, title: title, partials: [] });
+  saveSubjects(subjects);
+  return branchId;
+}
 
 function getProgress() { return LS.get(KEY_PROGRESS, {}); }
 function setPartialProgress(pid, data) { const p = getProgress(); const e = p[pid] || {}; const m = {...e, ...data}; Object.keys(m).forEach(k => m[k]===undefined && delete m[k]); p[pid]=m; LS.set(KEY_PROGRESS, p); }
@@ -525,9 +529,45 @@ function getNotes(pid) { return (LS.get(KEY_NOTES,{}))[pid]||''; }
 function setNotes(pid, t) { const n=LS.get(KEY_NOTES,{}); n[pid]=t; LS.set(KEY_NOTES,n); }
 function getExercises(pid) { return (LS.get(KEY_EXERCISES,{}))[pid]||[]; }
 function setExercises(pid, ex) { const e=LS.get(KEY_EXERCISES,{}); e[pid]=ex; LS.set(KEY_EXERCISES,e); }
-function calcSubjectProgress(subjectId) { const all=getAllPartials().filter(p=>p.subjectId===subjectId); if(!all.length) return 0; return Math.round((all.filter(p=>isCompleted(p.id)).length/all.length)*100); }
-function calcBranchProgress(branchId) { const ps=getBranchPartials(branchId); if(!ps.length) return {done:0,total:0,pct:0}; const d=ps.filter(p=>isCompleted(p.id)).length; return {done:d,total:ps.length,pct:Math.round((d/ps.length)*100)}; }
-function calcOverallProgress() { const all=getAllPartials(); if(!all.length) return {done:0,total:0,pct:0}; const d=all.filter(p=>isCompleted(p.id)).length; return {done:d,total:all.length,pct:Math.round((d/all.length)*100)}; }
+
+// ✅ إصلاح: حساب تقدم الـ module بناءً على عدد الـ partials المنجزة من إجمالي الـ partials
+function calcSubjectProgress(subjectId) { 
+  const all = getAllPartials().filter(p => p.subjectId === subjectId); 
+  if (!all.length) return 0; 
+  const done = all.filter(p => isCompleted(p.id)).length;
+  return Math.round((done / all.length) * 100); 
+}
+
+// ✅ إصلاح: حساب تقدم الـ branch
+function calcBranchProgress(branchId) { 
+  const ps = getBranchPartials(branchId); 
+  if (!ps.length) return {done:0, total:0, pct:0}; 
+  const d = ps.filter(p => isCompleted(p.id)).length; 
+  return {done:d, total:ps.length, pct: Math.round((d/ps.length)*100)}; 
+}
+
+// ✅ إصلاح: حساب التقدم الكلي - كل module له وزن متساوي
+function calcOverallProgress() { 
+  const subjects = getSubjects();
+  if (!subjects.length) return {done:0, total:0, pct:0};
+  
+  // كل module يساهم بنفس الوزن
+  let totalWeight = 0;
+  let earnedWeight = 0;
+  
+  subjects.forEach(s => {
+    const pct = calcSubjectProgress(s.id);
+    totalWeight += 100; // كل module وزنه 100
+    earnedWeight += pct; // النسبة المئوية المحققة
+  });
+  
+  const overallPct = totalWeight > 0 ? Math.round(earnedWeight / subjects.length) : 0;
+  const allPartials = getAllPartials();
+  const done = allPartials.filter(p => isCompleted(p.id)).length;
+  
+  return {done, total: allPartials.length, pct: overallPct};
+}
+
 function totalReviews() { return Object.values(getProgress()).reduce((s,v)=>s+(v.reviewCount||0),0); }
 function todayKey() { const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 
@@ -603,15 +643,23 @@ function renderPage(page) {
 
 // ========== HOME ==========
 function renderHome() {
-  const overall = calcOverallProgress(); const r=35,c=2*Math.PI*r,offset=c-(overall.pct/100)*c;
+  const overall = calcOverallProgress(); 
+  const r=35, c=2*Math.PI*r, offset=c-(overall.pct/100)*c;
+  
   const weeklyGoal = getWeeklyGoal(); let goalCard = '';
   if(weeklyGoal&&weeklyGoal.partials.length) {
-    const gp=calcGoalProgress(weeklyGoal); const gr=30,gc=2*Math.PI*gr,goffset=gc-(gp.pct/100)*gc; const sd=formatDate(new Date(weeklyGoal.startDate)),ed=formatDate(new Date(weeklyGoal.endDate)); const allDone=gp.done===gp.total&&gp.total>0;
+    const gp=calcGoalProgress(weeklyGoal); const gr=30,gc=2*Math.PI*gr,goffset=gc-(gp.pct/100)*gc; 
+    const sd=formatDate(new Date(weeklyGoal.startDate)),ed=formatDate(new Date(weeklyGoal.endDate)); 
+    const allDone=gp.done===gp.total&&gp.total>0;
     goalCard=`<div id="goal-card" class="goal-progress-card" style="border-color:${allDone?'var(--green)':'var(--accent-light)'}"><div class="goal-circle-wrap"><svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="${gr}" fill="none" stroke="var(--bg3)" stroke-width="6"/><circle id="goal-circle-fill" cx="35" cy="35" r="${gr}" fill="none" stroke="${allDone?'var(--green)':'var(--accent)'}" stroke-width="6" stroke-linecap="round" stroke-dasharray="${gc}" stroke-dashoffset="${goffset}" transform="rotate(-90 35 35)" style="transition: stroke-dashoffset 0.6s ease"/></svg><div class="goal-circle-text"><span id="goal-pct">${gp.pct}%</span><span class="goal-circle-sub">Objectif</span></div></div><div class="goal-info"><div class="goal-title">${allDone?'Objectif atteint!':'Objectif de la semaine'}</div><div class="goal-desc">${gp.done}/${gp.total} complété(s) (${sd} - ${ed})</div><div class="goal-actions"><button onclick="openChecklistModal()"><i class="ri-check-double-line"></i> Tâches</button><button onclick="openGoalModal()"><i class="ri-edit-line"></i> Modifier</button></div></div></div>`;
   } else {
     goalCard=`<div class="goal-empty-card"><i class="ri-focus-2-line goal-empty-icon"></i><div style="color:var(--text2);margin-bottom:8px;font-size:16px;font-weight:600">Objectif de la semaine</div><p style="font-size:13px;color:var(--text3);margin-bottom:16px">Définissez vos objectifs pour la semaine</p><button class="save-notes-btn" onclick="openGoalModal()"><i class="ri-add-line"></i> Définir</button></div>`;
   }
-  const prog=getProgress(); const studiedBranchIds=new Set(); getAllPartials().forEach(p=>{ if(prog[p.id]&&(prog[p.id].completed||prog[p.id].reviewCount>0)) studiedBranchIds.add(p.branchId); }); const allBranches=getAllBranches(); const studiedBranches=allBranches.filter(b=>studiedBranchIds.has(b.id)).slice(0,5);
+  
+  const prog=getProgress(); const studiedBranchIds=new Set(); 
+  getAllPartials().forEach(p=>{ if(prog[p.id]&&(prog[p.id].completed||prog[p.id].reviewCount>0)) studiedBranchIds.add(p.branchId); }); 
+  const allBranches=getAllBranches(); const studiedBranches=allBranches.filter(b=>studiedBranchIds.has(b.id)).slice(0,5);
+  
   let recentHtml='';
   if(studiedBranches.length) { 
     recentHtml=`<div class="section-title">Dernièrement étudié</div><div class="recent-list">${studiedBranches.map(b=>{ 
@@ -621,11 +669,12 @@ function renderHome() {
   } else { 
     recentHtml=`<div class="empty-state"><i class="ri-book-open-line"></i><p>Commencez à étudier depuis la liste des modules</p></div>`; 
   }
+  
   return `<div class="page-inner"><div class="home-hero"><div class="home-hero-label">Option Radiologique – ${new Date().getFullYear()}</div><div class="home-hero-title">Votre progression</div><div class="home-hero-progress"><div class="progress-ring-wrap"><svg width="80" height="80" viewBox="0 0 80 80"><circle class="progress-ring-bg" cx="40" cy="40" r="${r}"/><circle class="progress-ring-fill" cx="40" cy="40" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="${offset}"/></svg><div class="progress-ring-text"><span>${overall.pct}%</span><span class="progress-ring-sub">Complété</span></div></div><div class="home-hero-stats"><div class="home-hero-stat"><span>Parties terminées</span><strong>${overall.done}/${overall.total}</strong></div><div class="home-hero-stat"><span>Révisions</span><strong>${totalReviews()}</strong></div></div></div></div>${goalCard}<div class="stats-row"><div class="stat-card"><div class="stat-card-icon" style="color:var(--accent)"><i class="ri-book-open-line"></i></div><div class="stat-card-val">${getSubjects().length}</div><div class="stat-card-lbl">Modules</div></div><div class="stat-card"><div class="stat-card-icon" style="color:var(--green)"><i class="ri-checkbox-circle-line"></i></div><div class="stat-card-val">${overall.done}</div><div class="stat-card-lbl">Complété</div></div></div>${recentHtml}</div>`;
 }
 
-// ========== SUBJECTS PAGE WITH FOLDER VIEW ==========
-let currentViewMode = LS.get(KEY_VIEW_MODE, 'folders'); // 'folders' أو 'list'
+// ========== SUBJECTS PAGE ==========
+let currentViewMode = LS.get(KEY_VIEW_MODE, 'folders');
 let searchQuery = '';
 
 function renderSubjectsPage() {
@@ -658,10 +707,6 @@ function switchView(mode) {
   if (resultsDiv) {
     resultsDiv.innerHTML = mode === 'folders' ? renderFoldersView() : renderListView();
   }
-  // تحديث أزرار التبديل
-  document.querySelectorAll('.view-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.textContent.includes(mode === 'folders' ? 'Dossiers' : 'Liste'));
-  });
 }
 
 function renderFoldersView() {
@@ -710,54 +755,49 @@ function renderListView() {
     return '<div class="empty-state"><i class="ri-search-line"></i><p>Aucun module trouvé</p></div>';
   }
   
-  const allP=getAllPartials();
-  const totalP=allP.length;
-  const doneP=allP.filter(p=>isCompleted(p.id)).length;
-  
-  let html = `<div class="category-block"><div class="category-header"><i class="ri-folder-line" style="font-size:20px"></i><span class="category-header-text">Option Radiologique</span><span class="category-badge">${doneP}/${totalP}</span></div>`;
-  
-  filteredSubjects.forEach(s => {
-    const meta=s;
-    const pct=calcSubjectProgress(s.id);
-    const subjectPartials=getAllPartials().filter(p=>p.subjectId===s.id);
-    const doneP=subjectPartials.filter(p=>isCompleted(p.id)).length;
-    const allP=subjectPartials.length;
+  return filteredSubjects.map(s => {
+    const pct = calcSubjectProgress(s.id);
+    const subjectPartials = getAllPartials().filter(p=>p.subjectId===s.id);
+    const doneP = subjectPartials.filter(p=>isCompleted(p.id)).length;
+    const allP = subjectPartials.length;
     
-    html += `
-      <div class="subject-card" data-subject-id="${s.id}">
-        <div class="subject-header" onclick="toggleSubjectExpand('${s.id}')">
-          <div class="subject-icon" style="background:${meta.color?meta.color+'33':'rgba(108,99,255,0.15)'};color:${meta.color||'#6c63ff'}">
-            <i class="${meta.icon}"></i>
+    return `
+      <div class="subject-card" onclick="nav('folder:${s.id}')">
+        <div class="subject-header">
+          <div class="subject-icon" style="background:${s.color}33; color:${s.color}">
+            <i class="${s.icon}"></i>
           </div>
           <div class="subject-info">
             <div class="subject-name">${escHtml(s.title)}</div>
             <div class="subject-progress">${doneP}/${allP} · ${pct}%</div>
           </div>
-          <button class="subject-edit-btn" onclick="event.stopPropagation();openSubjectModal('${s.id}')" title="Modifier le module" aria-label="Modifier le module">
+          <button class="subject-edit-btn" onclick="event.stopPropagation();openSubjectModal('${s.id}')" title="Modifier le module">
             <i class="ri-pencil-line"></i>
           </button>
-          <i class="ri-arrow-right-s-line subject-chevron" id="chevron-subj-${s.id}"></i>
+          <i class="ri-arrow-right-s-line" style="color:var(--text3)"></i>
         </div>
         <div class="progress-bar-wrap">
-          <div class="progress-bar-fill" style="width:${pct}%"></div>
-        </div>
-        <div class="subject-body" id="body-subj-${s.id}">
-          ${(s.units||[]).map(u=>renderUnit(u)).join('')}
+          <div class="progress-bar-fill" style="width:${pct}%; background:${s.color}"></div>
         </div>
       </div>
     `;
-  });
-  
-  html += `</div><button class="save-notes-btn" onclick="openSubjectModal()" style="margin-top:8px;width:100%"><i class="ri-add-line"></i> Ajouter un module</button>`;
-  return html;
+  }).join('') + `<button class="save-notes-btn" onclick="openSubjectModal()" style="margin-top:8px;width:100%"><i class="ri-add-line"></i> Ajouter un module</button>`;
 }
 
-// ========== FOLDER VIEW (NEW) ==========
+function onSearchInput(v) {
+  searchQuery = v;
+  const resultsDiv = document.getElementById('subjects-results');
+  if (resultsDiv) {
+    resultsDiv.innerHTML = currentViewMode === 'folders' ? renderFoldersView() : renderListView();
+  }
+}
+
+// ========== FOLDER VIEW (مبسطة - مباشرة إلى branches) ==========
 function renderFolderView(subjectId) {
   const subject = getSubjects().find(s => s.id === subjectId);
   if (!subject) return '<div class="page-inner"><p>Module introuvable</p></div>';
   
-  const allBranches = getAllBranches().filter(b => b.subjectId === subjectId);
+  const branches = subject.branches || [];
   const subjectPartials = getAllPartials().filter(p=>p.subjectId===subjectId);
   const doneP = subjectPartials.filter(p=>isCompleted(p.id)).length;
   const allP = subjectPartials.length;
@@ -787,9 +827,15 @@ function renderFolderView(subjectId) {
         </div>
       </div>
       
-      <div class="section-title">Fichiers (${allBranches.length})</div>
+      <!-- ✅ إضافة branch جديد مباشرة -->
+      <div class="add-branch-inline">
+        <input class="add-exercise-input" id="add-branch-input-${subjectId}" placeholder="Ajouter un nouveau chapitre..." onkeydown="if(event.key==='Enter')addBranchInline('${subjectId}')" aria-label="Nouveau chapitre"/>
+        <button class="add-exercise-btn" onclick="addBranchInline('${subjectId}')"><i class="ri-add-line"></i> Ajouter</button>
+      </div>
+      
+      <div class="section-title">Chapitres (${branches.length})</div>
       <div class="file-browser">
-        ${allBranches.length ? allBranches.map(b => {
+        ${branches.length ? branches.map(b => {
           const bp = calcBranchProgress(b.id);
           const r = 18;
           const circ = 2 * Math.PI * r;
@@ -816,91 +862,21 @@ function renderFolderView(subjectId) {
               <i class="ri-arrow-right-s-line file-arrow"></i>
             </div>
           `;
-        }).join('') : '<div class="empty-state"><i class="ri-file-text-line"></i><p>Aucun fichier dans ce module</p></div>'}
+        }).join('') : '<div class="empty-state"><i class="ri-file-text-line"></i><p>Aucun chapitre dans ce module</p></div>'}
       </div>
     </div>
   `;
 }
 
-function onSearchInput(v) {
-  searchQuery = v;
-  const resultsDiv = document.getElementById('subjects-results');
-  if (resultsDiv) {
-    resultsDiv.innerHTML = currentViewMode === 'folders' ? renderFoldersView() : renderListView();
-    if (currentViewMode === 'list') {
-      restoreExpandState();
-    }
+function addBranchInline(subjectId) {
+  const input = document.getElementById('add-branch-input-' + subjectId);
+  if (!input || !input.value.trim()) return;
+  const branchId = addBranchToSubject(subjectId, input.value.trim());
+  if (branchId) {
+    input.value = '';
+    document.getElementById('page-content').innerHTML = renderFolderView(subjectId);
+    showToast('Chapitre ajouté');
   }
-}
-
-function toggleSubjectExpand(id) {
-  const body = document.getElementById('body-subj-'+id);
-  const chevron = document.getElementById('chevron-subj-'+id);
-  if (!body) return;
-  if (body.classList.contains('open')) {
-    body.classList.remove('open');
-    if (chevron) chevron.classList.remove('open');
-  } else {
-    body.classList.add('open');
-    if (chevron) chevron.classList.add('open');
-  }
-}
-
-const expandedUnits = new Set();
-function toggleUnitExpand(id) {
-  const body = document.getElementById('body-unit-'+id);
-  const chevron = document.getElementById('chevron-unit-'+id);
-  if (!body) return;
-  if (body.classList.contains('open')) {
-    body.classList.remove('open');
-    if (chevron) chevron.classList.remove('open');
-    expandedUnits.delete(id);
-  } else {
-    body.classList.add('open');
-    if (chevron) chevron.classList.add('open');
-    expandedUnits.add(id);
-  }
-}
-
-function restoreExpandState() {
-  expandedUnits.forEach(id => {
-    const body = document.getElementById('body-unit-'+id);
-    const chevron = document.getElementById('chevron-unit-'+id);
-    if (body) body.classList.add('open');
-    if (chevron) chevron.classList.add('open');
-  });
-}
-
-function renderUnit(u) {
-  return `
-    <div class="unit-block">
-      <div class="unit-header" onclick="toggleUnitExpand('${u.id}')">
-        <i class="ri-arrow-right-s-line unit-chevron" id="chevron-unit-${u.id}"></i>
-        <span class="unit-title">${escHtml(u.title)}</span>
-      </div>
-      <div class="unit-body" id="body-unit-${u.id}">
-        ${(u.lessons||[]).map(l => `
-          <div class="lesson-item">
-            <div class="lesson-title"><i class="ri-book-2-line"></i>${escHtml(l.title)}</div>
-            ${(l.branches||[]).map(b => {
-              const ps = getBranchPartials(b.id);
-              const done = ps.filter(p=>isCompleted(p.id)).length;
-              const isDone = done===ps.length&&ps.length>0;
-              const isPartial = done>0&&done<ps.length;
-              return `
-                <div class="branch-item" onclick="nav('branch:${b.id}')">
-                  <div class="branch-dot ${isDone?'done':isPartial?'partial':''}"></div>
-                  <span class="branch-name">${escHtml(b.title)}</span>
-                  <span class="branch-count">${done}/${ps.length}</span>
-                  <i class="ri-arrow-right-s-line branch-arrow"></i>
-                </div>
-              `;
-            }).join('')}
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `;
 }
 
 // ========== BRANCH VIEW ==========
@@ -911,14 +887,19 @@ function renderBranch(branchId) {
   const branch = findBranch(branchId);
   if (!branch) return '<div class="page-inner"><p>Branche introuvable</p></div>';
   const bp = calcBranchProgress(branchId);
+  const subject = getSubjects().find(s => s.id === branch.subjectId);
+  
   const html = `
     <div class="page-inner">
       <div class="branch-header-card">
-        <div class="branch-breadcrumb">Option Radiologique / ${escHtml(branch.subjectTitle)}</div>
+        <div class="branch-breadcrumb">
+          ${subject ? `<span style="cursor:pointer;color:var(--accent)" onclick="nav('folder:${subject.id}')">${escHtml(subject.title)}</span> / ` : ''}
+          ${escHtml(branch.title)}
+        </div>
         <div class="branch-main-title">${escHtml(branch.title)}</div>
         <div class="branch-progress-row">
           <div class="branch-progress-bar">
-            <div class="progress-bar-fill" style="width:${bp.pct}%"></div>
+            <div class="progress-bar-fill" style="width:${bp.pct}%;background:${subject?subject.color:'var(--accent)'}"></div>
           </div>
           <span class="branch-progress-val">${bp.done}/${bp.total}</span>
         </div>
@@ -1150,11 +1131,7 @@ function renderSessionsList(sessions) {
   }).join(''); 
 }
 
-function selectDay(key) { 
-  selectedDay=key; 
-  document.getElementById('page-content').innerHTML=renderSchedule(); 
-}
-
+function selectDay(key) { selectedDay=key; document.getElementById('page-content').innerHTML=renderSchedule(); }
 function addSession() { 
   const subjEl=document.getElementById('sess-subj'),timeEl=document.getElementById('sess-time'),durationEl=document.getElementById('sess-duration'),noteEl=document.getElementById('sess-note'); 
   if(!subjEl||!timeEl) return; 
@@ -1167,7 +1144,6 @@ function addSession() {
   document.getElementById('page-content').innerHTML=renderSchedule(); 
   showToast('Session ajoutée'); 
 }
-
 function toggleSessionComplete(idx) { 
   const schedule=LS.get(KEY_SCHEDULE,{}); 
   if(!schedule[selectedDay]||!schedule[selectedDay][idx]) return; 
@@ -1175,14 +1151,10 @@ function toggleSessionComplete(idx) {
   LS.set(KEY_SCHEDULE,schedule); 
   document.getElementById('page-content').innerHTML=renderSchedule(); 
 }
-
 function deleteSession(idx) { 
   if(!confirm('Supprimer cette session ?')) return; 
   const schedule=LS.get(KEY_SCHEDULE,{}); 
-  if(schedule[selectedDay]){ 
-    schedule[selectedDay].splice(idx,1); 
-    LS.set(KEY_SCHEDULE,schedule); 
-  } 
+  if(schedule[selectedDay]){ schedule[selectedDay].splice(idx,1); LS.set(KEY_SCHEDULE,schedule); } 
   document.getElementById('page-content').innerHTML=renderSchedule(); 
   showToast('Session supprimée'); 
 }
@@ -1195,8 +1167,7 @@ function renderStats() {
   const activity=LS.get(KEY_ACTIVITY,{}); 
   const heatCells=[]; 
   for(let i=90;i>=0;i--){ 
-    const d=new Date(today); 
-    d.setDate(today.getDate()-i); 
+    const d=new Date(today); d.setDate(today.getDate()-i); 
     const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; 
     const min=activity[key]||0; 
     const lvl=min===0?0:min<30?1:min<60?2:min<120?3:4; 
@@ -1235,52 +1206,181 @@ function saveSubjectFromModal() {
   const color = document.getElementById('subject-color-input').value;
   let subjects = getSubjects();
   if (id) { subjects = subjects.map(s => s.id === id ? { ...s, title: name, icon, color } : s); }
-  else { const newId = 'subj-' + Date.now(); subjects.push({ id: newId, title: name, icon, color, units: [{ id: "u-" + newId, title: "Général", lessons: [{ id: "l-" + newId, title: "Cours", branches: [{ id: "b-" + newId, title: "Chapitre 1", partials: createDefaultPartials(newId) }] }] }] }); }
+  else { const newId = 'subj-' + Date.now(); subjects.push({ id: newId, title: name, icon, color, branches: [{ id: "b-" + newId, title: "Chapitre 1", partials: createDefaultPartials(newId) }] }); }
   saveSubjects(subjects); closeSubjectModal(); 
-  if (currentPage === 'subjects') { 
-    document.getElementById('page-content').innerHTML = renderSubjectsPage(); 
-  }
+  if (currentPage === 'subjects') { document.getElementById('page-content').innerHTML = renderSubjectsPage(); }
   showToast(id ? 'Module modifié' : 'Module ajouté');
 }
 
-// ========== GOAL MODAL ==========
+// ========== GOAL MODAL (إصلاح البحث) ==========
 let goalModalSearchQuery = '';
-function openGoalModal() { document.getElementById('goal-modal').classList.add('open'); document.getElementById('goal-search-input').value = goalModalSearchQuery; document.getElementById('goal-modal-results').innerHTML = renderGoalResults(getWeeklyGoal()?.partials || []); }
+function openGoalModal() { 
+  document.getElementById('goal-modal').classList.add('open'); 
+  goalModalSearchQuery = '';
+  document.getElementById('goal-search-input').value = ''; 
+  document.getElementById('goal-modal-results').innerHTML = renderGoalResults(getWeeklyGoal()?.partials || []); 
+}
 function closeGoalModal() { document.getElementById('goal-modal').classList.remove('open'); }
-function onGoalModalSearch() { goalModalSearchQuery = document.getElementById('goal-search-input').value; document.getElementById('goal-modal-results').innerHTML = renderGoalResults(getWeeklyGoal()?.partials || []); }
+function onGoalModalSearch() { 
+  goalModalSearchQuery = document.getElementById('goal-search-input').value; 
+  document.getElementById('goal-modal-results').innerHTML = renderGoalResults(getWeeklyGoal()?.partials || []); 
+}
+
+// ✅ إصلاح: تحسين وظيفة البحث في goal modal
 function renderGoalResults(selectedIds) { 
-  const q=goalModalSearchQuery.toLowerCase().trim(); 
-  if(q){ 
-    const matching=getAllPartials().filter(p=>p.title.toLowerCase().includes(q)); 
-    if(!matching.length) return '<div class="empty-state"><i class="ri-search-line"></i><p>Aucun résultat</p></div>'; 
-    return '<div style="display:flex;flex-direction:column;gap:6px">'+matching.map(p=>{ 
-      const checked=selectedIds.includes(p.id); 
-      return `<label class="modal-partial-label"><div class="modal-partial-checkbox ${checked?'checked':''}">${checked?'<i class="ri-check-line"></i>':''}</div><input type="checkbox" value="${p.id}" ${checked?'checked':''} style="display:none" onchange="toggleGoalCheckbox(this)"><span class="modal-partial-title">${escHtml(p.title)}</span><span style="font-size:11px;color:var(--text3)">${escHtml(p.subjectTitle)}</span></label>`; 
-    }).join('')+'</div>'; 
+  const q = goalModalSearchQuery.toLowerCase().trim(); 
+  const allPartials = getAllPartials();
+  
+  if (q) { 
+    // ✅ إصلاح: البحث في كل الـ partials (وليس فقط الـ matching)
+    const matching = allPartials.filter(p => 
+      p.title.toLowerCase().includes(q) || 
+      (p.subjectTitle && p.subjectTitle.toLowerCase().includes(q))
+    ); 
+    
+    if (!matching.length) {
+      return `<div class="empty-state"><i class="ri-search-line"></i><p>Aucun résultat pour "${escHtml(q)}"</p></div>`; 
+    }
+    
+    return '<div style="display:flex;flex-direction:column;gap:6px">' + matching.map(p => { 
+      const checked = selectedIds.includes(p.id); 
+      return `
+        <label class="modal-partial-label" style="cursor:pointer">
+          <div class="modal-partial-checkbox ${checked?'checked':''}">
+            ${checked?'<i class="ri-check-line"></i>':''}
+          </div>
+          <input type="checkbox" value="${p.id}" ${checked?'checked':''} style="display:none" onchange="toggleGoalCheckbox(this)">
+          <span class="modal-partial-title">${escHtml(p.title)}</span>
+          <span style="font-size:11px;color:var(--text3)">${escHtml(p.subjectTitle||'')}</span>
+        </label>
+      `; 
+    }).join('') + '</div>'; 
   } 
-  const subjectsMap=new Map(); 
-  getAllBranches().forEach(b=>{ 
-    if(!subjectsMap.has(b.subjectId)) subjectsMap.set(b.subjectId,{subject:getSubjects().find(s=>s.id===b.subjectId),branches:[]}); 
-    subjectsMap.get(b.subjectId).branches.push(b); 
-  }); 
-  let html=''; 
-  subjectsMap.forEach((val,subjId)=>{ 
-    const meta=subjMeta(subjId); 
-    html+=`<div style="margin-bottom:8px"><div class="modal-subject-header" onclick="toggleGoalSubject('${subjId}')"><div class="modal-subject-icon" style="background:${meta.color?meta.color+'33':'rgba(108,99,255,0.15)'};color:${meta.color||'#6c63ff'}"><i class="${meta.icon}"></i></div><div class="modal-subject-info"><div class="modal-subject-name">${escHtml(val.subject.title)}</div></div><i class="ri-arrow-right-s-line modal-subject-chevron" id="goal-chevron-${subjId}"></i></div><div class="modal-subject-body" id="goal-subject-body-${subjId}">${val.branches.map(b=>`<div class="modal-branch-row" onclick="toggleGoalBranch('${b.id}')"><span class="modal-branch-name">${escHtml(b.title)}</span><i class="ri-arrow-down-s-line modal-branch-chevron" id="goal-branch-chevron-${b.id}"></i></div><div class="modal-partials-list" id="goal-branch-partials-${b.id}">${getBranchPartials(b.id).map(p=>{ const checked=selectedIds.includes(p.id); return `<label class="modal-partial-label"><div class="modal-partial-checkbox ${checked?'checked':''}">${checked?'<i class="ri-check-line"></i>':''}</div><input type="checkbox" value="${p.id}" ${checked?'checked':''} style="display:none" onchange="toggleGoalCheckbox(this)"><span class="modal-partial-title">${escHtml(p.title)}</span></label>`; }).join('')}</div>`).join('')}</div></div>`; 
-  }); 
+  
+  // عرض منظم حسب الـ modules والـ branches
+  let html = '';
+  const subjects = getSubjects();
+  subjects.forEach(s => {
+    const meta = s;
+    const branches = s.branches || [];
+    const hasMatchingPartials = branches.some(b => {
+      const ps = getBranchPartials(b.id);
+      return ps.length > 0;
+    });
+    
+    if (!hasMatchingPartials) return;
+    
+    html += `
+      <div style="margin-bottom:8px">
+        <div class="modal-subject-header" onclick="toggleGoalSubject('${s.id}')">
+          <div class="modal-subject-icon" style="background:${meta.color}33; color:${meta.color}">
+            <i class="${meta.icon}"></i>
+          </div>
+          <div class="modal-subject-info">
+            <div class="modal-subject-name">${escHtml(s.title)}</div>
+            <div class="modal-subject-count">${branches.length} chapitre(s)</div>
+          </div>
+          <i class="ri-arrow-right-s-line modal-subject-chevron" id="goal-chevron-${s.id}"></i>
+        </div>
+        <div class="modal-subject-body" id="goal-subject-body-${s.id}">
+          ${branches.map(b => {
+            const ps = getBranchPartials(b.id);
+            if (!ps.length) return '';
+            return `
+              <div class="modal-branch-row" onclick="toggleGoalBranch('${b.id}')">
+                <span class="modal-branch-name">${escHtml(b.title)}</span>
+                <span class="modal-branch-stats">${ps.length} parties</span>
+                <i class="ri-arrow-down-s-line modal-branch-chevron" id="goal-branch-chevron-${b.id}"></i>
+              </div>
+              <div class="modal-partials-list" id="goal-branch-partials-${b.id}">
+                ${ps.map(p => { 
+                  const checked = selectedIds.includes(p.id); 
+                  return `
+                    <label class="modal-partial-label" style="cursor:pointer">
+                      <div class="modal-partial-checkbox ${checked?'checked':''}">
+                        ${checked?'<i class="ri-check-line"></i>':''}
+                      </div>
+                      <input type="checkbox" value="${p.id}" ${checked?'checked':''} style="display:none" onchange="toggleGoalCheckbox(this)">
+                      <span class="modal-partial-title">${escHtml(p.title)}</span>
+                    </label>
+                  `; 
+                }).join('')}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  });
+  
+  if (!html) {
+    html = '<div class="empty-state"><i class="ri-book-open-line"></i><p>Aucune partie disponible</p></div>';
+  }
+  
   return html; 
 }
-function toggleGoalSubject(id) { const body=document.getElementById('goal-subject-body-'+id),chevron=document.getElementById('goal-chevron-'+id); if(body){ body.classList.toggle('open'); chevron?.classList.toggle('open'); } }
-function toggleGoalBranch(id) { const list=document.getElementById('goal-branch-partials-'+id),chevron=document.getElementById('goal-branch-chevron-'+id); if(list){ list.classList.toggle('open'); chevron?.classList.toggle('open'); } }
-function toggleGoalCheckbox(el) { const box=el.previousElementSibling; box.classList.toggle('checked',el.checked); box.innerHTML=el.checked?'<i class="ri-check-line"></i>':''; }
-function saveWeeklyGoalFromModal() { const ids=[...document.querySelectorAll('#goal-modal-results input[type="checkbox"]:checked')].map(cb=>cb.value); if(!ids.length){ showToast('Sélectionnez au moins une partie'); return; } saveWeeklyGoal(ids); closeGoalModal(); document.getElementById('page-content').innerHTML=renderHome(); showToast('Objectif enregistré'); }
+
+function toggleGoalSubject(id) { 
+  const body = document.getElementById('goal-subject-body-'+id);
+  const chevron = document.getElementById('goal-chevron-'+id); 
+  if (body) { 
+    body.classList.toggle('open'); 
+    if (chevron) chevron.classList.toggle('open'); 
+  } 
+}
+function toggleGoalBranch(id) { 
+  const list = document.getElementById('goal-branch-partials-'+id);
+  const chevron = document.getElementById('goal-branch-chevron-'+id); 
+  if (list) { 
+    list.classList.toggle('open'); 
+    if (chevron) chevron.classList.toggle('open'); 
+  } 
+}
+function toggleGoalCheckbox(el) { 
+  const box = el.previousElementSibling; 
+  box.classList.toggle('checked', el.checked); 
+  box.innerHTML = el.checked ? '<i class="ri-check-line"></i>' : ''; 
+}
+function saveWeeklyGoalFromModal() { 
+  const ids = [...document.querySelectorAll('#goal-modal-results input[type="checkbox"]:checked')].map(cb => cb.value); 
+  if (!ids.length) { 
+    showToast('Sélectionnez au moins une partie'); 
+    return; 
+  } 
+  saveWeeklyGoal(ids); 
+  closeGoalModal(); 
+  document.getElementById('page-content').innerHTML = renderHome(); 
+  showToast('Objectif enregistré'); 
+}
 
 // ========== CHECKLIST ==========
 function openChecklistModal() { document.getElementById('checklist-modal').classList.add('open'); renderChecklist(); }
 function closeChecklistModal() { document.getElementById('checklist-modal').classList.remove('open'); updateGoalCardDisplay(); }
-function renderChecklist() { const goal=getWeeklyGoal(); const body=document.getElementById('checklist-body'); if(!goal||!goal.partials.length){ body.innerHTML='<p style="text-align:center;padding:20px">Aucune tâche</p>'; return; } const allP=getAllPartials(); body.innerHTML=goal.partials.map(pid=>{ const p=allP.find(pp=>pp.id===pid); if(!p) return ''; const done=isCompleted(pid); return `<div class="checklist-item"><div class="checklist-item-actions"><div class="checklist-checkbox ${done?'checked':''}" onclick="toggleChecklistItem('${pid}')">${done?'<i class="ri-check-line" style="font-size:14px"></i>':''}</div><button class="checklist-delete-btn" onclick="removeChecklistItem('${pid}')" aria-label="Retirer la tâche"><i class="ri-delete-bin-line"></i></button></div><div class="checklist-item-title">${escHtml(p.title)}</div><div class="checklist-item-sub">${escHtml(p.subjectTitle)}</div></div>`; }).join(''); }
+function renderChecklist() { 
+  const goal=getWeeklyGoal(); 
+  const body=document.getElementById('checklist-body'); 
+  if(!goal||!goal.partials.length){ 
+    body.innerHTML='<p style="text-align:center;padding:20px">Aucune tâche</p>'; 
+    return; 
+  } 
+  const allP=getAllPartials(); 
+  body.innerHTML=goal.partials.map(pid=>{ 
+    const p=allP.find(pp=>pp.id===pid); 
+    if(!p) return ''; 
+    const done=isCompleted(pid); 
+    return `<div class="checklist-item"><div class="checklist-item-actions"><div class="checklist-checkbox ${done?'checked':''}" onclick="toggleChecklistItem('${pid}')">${done?'<i class="ri-check-line" style="font-size:14px"></i>':''}</div><button class="checklist-delete-btn" onclick="removeChecklistItem('${pid}')" aria-label="Retirer la tâche"><i class="ri-delete-bin-line"></i></button></div><div class="checklist-item-title">${escHtml(p.title)}</div><div class="checklist-item-sub">${escHtml(p.subjectTitle)}</div></div>`; 
+  }).join(''); 
+}
 function toggleChecklistItem(pid) { toggleComplete(pid); renderChecklist(); }
-function removeChecklistItem(pid) { const goal=getWeeklyGoal(); if(!goal) return; goal.partials=goal.partials.filter(id=>id!==pid); if(!goal.partials.length){ clearWeeklyGoal(); closeChecklistModal(); } else LS.set(KEY_WEEKLY_GOAL,goal); renderChecklist(); updateGoalCardDisplay(); }
+function removeChecklistItem(pid) { 
+  const goal=getWeeklyGoal(); 
+  if(!goal) return; 
+  goal.partials=goal.partials.filter(id=>id!==pid); 
+  if(!goal.partials.length){ clearWeeklyGoal(); closeChecklistModal(); } 
+  else LS.set(KEY_WEEKLY_GOAL,goal); 
+  renderChecklist(); 
+  updateGoalCardDisplay(); 
+}
 function updateGoalCardDisplay() { 
   const card=document.getElementById('goal-card'); 
   if(!card) return; 
@@ -1307,7 +1407,10 @@ function clearWeeklyGoal() { LS.set(KEY_WEEKLY_GOAL, null); }
 function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 // ========== INIT ==========
-(function initGoalClear() { const goal=LS.get(KEY_WEEKLY_GOAL,null); if(goal&&goal.weekMonday!==getWeekKey()) LS.set(KEY_WEEKLY_GOAL,null); })();
+(function initGoalClear() { 
+  const goal=LS.get(KEY_WEEKLY_GOAL,null); 
+  if(goal&&goal.weekMonday!==getWeekKey()) LS.set(KEY_WEEKLY_GOAL,null); 
+})();
 nav('home', false);
 </script>
 </body>
