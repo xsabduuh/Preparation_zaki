@@ -1458,64 +1458,117 @@ nav('home', false);
 </script>
 
 <script>
-// ===== PWA: أيقونة الشاشة الرئيسية =====
+// ===== PWA: أيقونة احترافية – ماسح الأشعة الطبي =====
 (function() {
   try {
-    const size = 512;
+    const S = 512, CR = 110;
     const canvas = document.createElement('canvas');
-    canvas.width = size; canvas.height = size;
+    canvas.width = S; canvas.height = S;
     const ctx = canvas.getContext('2d');
-    // خلفية متدرجة
-    const grad = ctx.createLinearGradient(0, 0, size, size);
-    grad.addColorStop(0, '#6c63ff');
-    grad.addColorStop(1, '#9c5cf5');
-    ctx.fillStyle = grad;
-    // زوايا دائرية
-    const r = 115;
+    const cx = S / 2, cy = S / 2;
+
+    // ── 1. خلفية بتدرج بنفسجي عميق ──
+    const bg = ctx.createLinearGradient(0, 0, S, S);
+    bg.addColorStop(0, '#2d1b8e');
+    bg.addColorStop(0.45, '#6c63ff');
+    bg.addColorStop(1, '#a855f7');
+    ctx.fillStyle = bg;
     ctx.beginPath();
-    ctx.moveTo(r, 0); ctx.lineTo(size-r, 0);
-    ctx.quadraticCurveTo(size, 0, size, r);
-    ctx.lineTo(size, size-r);
-    ctx.quadraticCurveTo(size, size, size-r, size);
-    ctx.lineTo(r, size);
-    ctx.quadraticCurveTo(0, size, 0, size-r);
-    ctx.lineTo(0, r);
-    ctx.quadraticCurveTo(0, 0, r, 0);
+    ctx.moveTo(CR, 0); ctx.lineTo(S - CR, 0);
+    ctx.quadraticCurveTo(S, 0, S, CR);
+    ctx.lineTo(S, S - CR);
+    ctx.quadraticCurveTo(S, S, S - CR, S);
+    ctx.lineTo(CR, S);
+    ctx.quadraticCurveTo(0, S, 0, S - CR);
+    ctx.lineTo(0, CR);
+    ctx.quadraticCurveTo(0, 0, CR, 0);
     ctx.closePath();
     ctx.fill();
-    // رمز طبي (صليب)
-    ctx.fillStyle = 'rgba(255,255,255,0.95)';
-    const cx = size/2, cy = size/2, arm = 100, thick = 60;
-    ctx.fillRect(cx - thick/2, cy - arm, thick, arm*2);
-    ctx.fillRect(cx - arm, cy - thick/2, arm*2, thick);
-    // حرف Z صغير في الزاوية
-    ctx.font = 'bold 100px sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.textAlign = 'right';
-    ctx.textBaseline = 'bottom';
-    ctx.fillText('Z', size - 30, size - 20);
+
+    // ── 2. بريق مركزي ──
+    const glow = ctx.createRadialGradient(cx, cy - 40, 10, cx, cy, 260);
+    glow.addColorStop(0, 'rgba(255,255,255,0.18)');
+    glow.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = glow;
+    ctx.beginPath(); ctx.arc(cx, cy, 260, 0, Math.PI * 2); ctx.fill();
+
+    // ── 3. حلقة الماسح الخارجية (CT ring) ──
+    // ظل الحلقة
+    ctx.shadowColor = 'rgba(108,99,255,0.6)';
+    ctx.shadowBlur = 30;
+    ctx.beginPath(); ctx.arc(cx, cy, 190, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 36; ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // الحلقة الرئيسية
+    ctx.beginPath(); ctx.arc(cx, cy, 188, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(255,255,255,0.88)'; ctx.lineWidth = 22; ctx.stroke();
+
+    // قوس مضيء في الأعلى (تأثير الضوء)
+    ctx.beginPath(); ctx.arc(cx, cy, 188, -Math.PI * 0.75, -Math.PI * 0.25);
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 22; ctx.stroke();
+
+    // ── 4. حلقة وسطى ──
+    ctx.beginPath(); ctx.arc(cx, cy, 118, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 10; ctx.stroke();
+
+    // ── 5. خطوط التقاطع (crosshair) ──
+    ctx.strokeStyle = 'rgba(255,255,255,0.22)'; ctx.lineWidth = 4;
+    const drawLine = (x1, y1, x2, y2) => { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); };
+    drawLine(cx - 200, cy, cx + 200, cy);   // أفقي
+    drawLine(cx, cy - 200, cx, cy + 200);   // عمودي
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 2;
+    drawLine(cx - 145, cy - 145, cx + 145, cy + 145);  // قطري ↘
+    drawLine(cx + 145, cy - 145, cx - 145, cy + 145);  // قطري ↙
+
+    // ── 6. نبضة قلب داخل الحلقة (Waveform / ECG) ──
+    ctx.strokeStyle = 'rgba(255,255,255,0.75)'; ctx.lineWidth = 8;
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    ctx.beginPath();
+    const w = 140, yb = cy + 8;
+    ctx.moveTo(cx - w, yb);
+    ctx.lineTo(cx - 55, yb);
+    ctx.lineTo(cx - 30, yb - 70);
+    ctx.lineTo(cx - 10, yb + 40);
+    ctx.lineTo(cx + 15, yb - 110);
+    ctx.lineTo(cx + 40, yb + 28);
+    ctx.lineTo(cx + 60, yb);
+    ctx.lineTo(cx + w, yb);
+    ctx.stroke();
+
+    // ── 7. نقطة مركزية ──
+    const dotGlow = ctx.createRadialGradient(cx, cy, 0, cx, cy, 38);
+    dotGlow.addColorStop(0, 'rgba(255,255,255,1)');
+    dotGlow.addColorStop(0.5, 'rgba(200,180,255,0.6)');
+    dotGlow.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = dotGlow;
+    ctx.beginPath(); ctx.arc(cx, cy, 38, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(cx, cy, 16, 0, Math.PI * 2); ctx.fill();
+
+    // ── 8. حرف "Z" صغير أسفل اليمين ──
+    ctx.font = 'bold 58px sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.28)';
+    ctx.textAlign = 'right'; ctx.textBaseline = 'bottom';
+    ctx.fillText('Z', S - 28, S - 22);
 
     const iconUrl = canvas.toDataURL('image/png');
 
     // Apple Touch Icon
-    const touchIcon = document.createElement('link');
-    touchIcon.rel = 'apple-touch-icon';
-    touchIcon.sizes = '512x512';
-    touchIcon.href = iconUrl;
-    document.head.appendChild(touchIcon);
+    let ti = document.querySelector('link[rel="apple-touch-icon"]');
+    if (!ti) { ti = document.createElement('link'); document.head.appendChild(ti); }
+    ti.rel = 'apple-touch-icon'; ti.sizes = '512x512'; ti.href = iconUrl;
 
     // Favicon
-    const favicon = document.createElement('link');
-    favicon.rel = 'icon';
-    favicon.type = 'image/png';
-    favicon.href = iconUrl;
-    document.head.appendChild(favicon);
+    let fav = document.querySelector('link[rel="icon"]');
+    if (!fav) { fav = document.createElement('link'); document.head.appendChild(fav); }
+    fav.rel = 'icon'; fav.type = 'image/png'; fav.href = iconUrl;
 
-    // Web App Manifest (blob URL)
+    // Manifest
     const manifest = {
-      name: 'Préparation Zakaria – Option Radiologique',
+      name: 'Préparation Zakaria – Radiologie',
       short_name: 'Prép Zakaria',
-      description: 'Application de préparation pour l'option radiologique',
+      description: "Préparation option radiologique",
       start_url: '.',
       display: 'standalone',
       orientation: 'portrait',
@@ -1527,9 +1580,13 @@ nav('home', false);
       ]
     };
     const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
-    const manifestLink = document.getElementById('pwa-manifest');
-    if (manifestLink) manifestLink.href = URL.createObjectURL(blob);
-  } catch(e) { console.warn('PWA setup failed:', e); }
+    let ml = document.getElementById('pwa-manifest');
+    if (!ml) { ml = document.createElement('link'); ml.id = 'pwa-manifest'; document.head.appendChild(ml); }
+    ml.rel = 'manifest';
+    if (ml.href && ml.href.startsWith('blob:')) URL.revokeObjectURL(ml.href);
+    ml.href = URL.createObjectURL(blob);
+
+  } catch(e) { console.warn('PWA icon error:', e); }
 })();
 </script>
 </body>
