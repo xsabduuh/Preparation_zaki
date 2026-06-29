@@ -225,35 +225,52 @@
     .partial-meta { font-size: 12px; color: var(--text3); margin-top: 4px; display: flex; gap: 12px; flex-wrap: wrap; }
     .partial-body { display: none; border-top: 1px solid var(--border); padding: 14px; } .partial-body.open { display: block; }
     
-    .tab-bar { display: flex; gap: 4px; background: var(--bg3); border-radius: var(--radius-sm); padding: 4px; margin-bottom: 12px; }
-    .tab-btn { flex: 1; border: none; background: none; font-family: inherit; font-size: 12px; font-weight: 500; color: var(--text3); padding: 6px 4px; border-radius: 6px; cursor: pointer; transition: all 0.15s, transform 0.1s; }
-    .tab-btn.active { background: var(--bg2); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.1); } .tab-btn:active { background: var(--bg2); transform: scale(0.95); }
-    
+    /* Tab Bar محسّن */
+    .tab-bar { display: flex; gap: 4px; background: var(--bg3); border-radius: 12px; padding: 4px; margin-bottom: 14px; }
+    .tab-btn { flex: 1; border: none; background: none; font-family: inherit; font-size: 12px; font-weight: 600; color: var(--text3); padding: 8px 4px; border-radius: 9px; cursor: pointer; transition: all 0.18s; display: flex; align-items: center; justify-content: center; gap: 4px; }
+    .tab-btn i { font-size: 15px; }
+    .tab-btn.active { background: var(--accent); color: #fff; box-shadow: 0 3px 10px rgba(108,99,255,0.35); }
+    .tab-btn:active { transform: scale(0.94); }
+
+    /* Notes Tab */
     .content-area { font-size: 13px; color: var(--text2); line-height: 1.7; }
-    .notes-textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; font-family: inherit; font-size: 13px; color: var(--text); resize: vertical; min-height: 100px; outline: none; line-height: 1.6; }
-    .notes-textarea:focus { border-color: var(--accent); }
-    .save-notes-btn { margin-top: 8px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); padding: 8px 16px; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.15s, transform 0.1s; }
-    .save-notes-btn:active { background: var(--accent2); transform: scale(0.95); }
-    
+    .notes-area { padding: 2px 0 6px; }
+    .notes-textarea { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; padding: 14px; font-family: inherit; font-size: 14px; color: var(--text); resize: vertical; min-height: 130px; outline: none; line-height: 1.75; transition: border-color 0.2s, box-shadow 0.2s; }
+    .notes-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
+    .notes-textarea::placeholder { color: var(--text3); }
+    .save-notes-btn { margin-top: 10px; width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 12px; padding: 12px; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.15s, transform 0.1s; box-shadow: 0 3px 10px rgba(108,99,255,0.25); }
+    .save-notes-btn:active { background: var(--accent2); transform: scale(0.97); }
+
+    /* Exercises Tab */
     .exercises-area { display: flex; flex-direction: column; gap: 8px; }
-    .exercise-item { background: var(--bg3); border-radius: var(--radius-sm); padding: 10px 12px; display: flex; gap: 10px; align-items: flex-start; }
-    .exercise-check { width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--border); flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-    .exercise-check:active { transform: scale(0.8); } .exercise-check.done { background: var(--green); border-color: var(--green); color: #fff; } .exercise-check i { font-size: 12px; }
-    .exercise-text { flex: 1; font-size: 13px; color: var(--text2); }
+    .exercise-item { background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; padding: 12px 14px; display: flex; gap: 12px; align-items: center; transition: border-color 0.2s; }
+    .exercise-item.done-item { border-color: var(--green); opacity: 0.7; }
+    .exercise-check { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border); flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+    .exercise-check:active { transform: scale(0.8); } .exercise-check.done { background: var(--green); border-color: var(--green); color: #fff; } .exercise-check i { font-size: 13px; }
+    .exercise-text { flex: 1; font-size: 13px; color: var(--text2); line-height: 1.4; }
     .add-exercise-row { display: flex; gap: 8px; margin-top: 4px; }
-    .add-exercise-input { flex: 1; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; font-family: inherit; font-size: 13px; color: var(--text); outline: none; }
+    .add-exercise-input { flex: 1; background: var(--bg); border: 1.5px solid var(--border); border-radius: 12px; padding: 10px 14px; font-family: inherit; font-size: 13px; color: var(--text); outline: none; transition: border-color 0.2s; }
     .add-exercise-input:focus { border-color: var(--accent); }
-    .add-exercise-btn { background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); padding: 8px 14px; font-family: inherit; font-size: 13px; cursor: pointer; }
-    .add-exercise-btn:active { background: var(--accent2); transform: scale(0.95); }
-    
-    .review-section { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .review-count { font-size: 13px; color: var(--text2); } .review-count strong { color: var(--accent); font-size: 18px; }
-    .review-btn { background: var(--accent-light); color: var(--accent); border: 1px solid var(--accent); border-radius: var(--radius-sm); padding: 8px 16px; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
-    .review-btn:active { background: var(--accent); color: #fff; transform: scale(0.95); }
-    
-    .complete-btn-wrap { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
-    .complete-btn { width: 100%; border: none; border-radius: var(--radius-sm); padding: 11px; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
-    .complete-btn:active { transform: scale(0.96); } .complete-btn.done { background: var(--green-light); color: var(--green); } .complete-btn.undone { background: var(--accent); color: #fff; }
+    .add-exercise-btn { background: var(--accent); color: #fff; border: none; border-radius: 12px; padding: 10px 16px; font-family: inherit; font-size: 18px; cursor: pointer; display: flex; align-items: center; flex-shrink: 0; }
+    .add-exercise-btn:active { background: var(--accent2); transform: scale(0.92); }
+
+    /* Review Tab */
+    .review-hero { background: linear-gradient(135deg, var(--accent-light), rgba(156,92,245,0.1)); border: 1.5px solid var(--accent-light); border-radius: 16px; padding: 24px 16px; text-align: center; margin-bottom: 12px; }
+    .review-hero-count { font-size: 54px; font-weight: 800; color: var(--accent); line-height: 1; margin-bottom: 6px; letter-spacing: -2px; }
+    .review-hero-label { font-size: 13px; color: var(--text3); font-weight: 500; }
+    .review-hero-stars { margin-top: 10px; font-size: 18px; letter-spacing: 4px; }
+    .review-add-btn { width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 12px; padding: 13px; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.15s, transform 0.1s; box-shadow: 0 3px 10px rgba(108,99,255,0.25); }
+    .review-add-btn:active { background: var(--accent2); transform: scale(0.97); }
+
+    /* Partial body & complete btn */
+    .partial-body { display: none; border-top: 1px solid var(--border); padding: 16px 14px; background: var(--bg2); } .partial-body.open { display: block; }
+    .complete-btn-wrap { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+    .complete-btn { width: 100%; border: none; border-radius: 12px; padding: 13px; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.15s; }
+    .complete-btn:active { transform: scale(0.96); } .complete-btn.done { background: var(--green-light); color: var(--green); border: 1.5px solid var(--green); } .complete-btn.undone { background: var(--accent); color: #fff; box-shadow: 0 3px 10px rgba(108,99,255,0.25); }
+
+    /* Delete Module Button */
+    .delete-module-btn { background: var(--red-light); border: 1.5px solid rgba(239,68,68,0.2); color: var(--red); border-radius: 10px; padding: 8px 13px; cursor: pointer; font-size: 19px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+    .delete-module-btn:active { background: var(--red); color: #fff; transform: scale(0.88); }
     
     .week-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 6px; margin-bottom: 16px; }
     .day-cell { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 4px; text-align: center; cursor: pointer; transition: all 0.2s, transform 0.1s; }
@@ -802,9 +819,12 @@ function renderFolderView(subjectId) {
 
   const html = `
     <div class="page-inner">
-      <div class="folder-breadcrumb">
-        <button class="folder-back-btn" onclick="nav('subjects')">
+      <div class="folder-breadcrumb" style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px">
+        <button class="folder-back-btn" style="margin-bottom:0" onclick="nav('subjects')">
           <i class="ri-arrow-left-line"></i> Tous les modules
+        </button>
+        <button class="delete-module-btn" onclick="deleteModule('${subjectId}')" title="Supprimer ce module" aria-label="Supprimer le module">
+          <i class="ri-delete-bin-2-line"></i>
         </button>
       </div>
 
@@ -839,6 +859,18 @@ function renderFolderView(subjectId) {
   `;
   setTimeout(() => restoreBranchState(), 0);
   return html;
+}
+
+function deleteModule(subjectId) {
+  if (!confirm('Supprimer ce module et toutes ses fiches ?')) return;
+  const subject = getSubjects().find(s => s.id === subjectId);
+  if (subject) {
+    const branchIds = new Set((subject.branches||[]).map(b => b.id));
+    LS.set(KEY_CUSTOM_PARTIALS, getCustomPartials().filter(p => !branchIds.has(p.branchId)));
+  }
+  saveSubjects(getSubjects().filter(s => s.id !== subjectId));
+  nav('subjects');
+  showToast('Module supprimé');
 }
 
 function addPartialToModule(subjectId, branchId) {
@@ -1003,19 +1035,56 @@ function switchTab(pid,tab) {
   else if(tab==='review') area.innerHTML=renderReviewTab(pid);
 }
 
-function renderNotesTab(pid) { 
-  const notes=getNotes(pid); 
-  return `<div class="content-area"><textarea class="notes-textarea" id="notes-ta-${pid}" placeholder="Ajoutez vos notes..." aria-label="Notes">${escHtml(notes)}</textarea><button class="save-notes-btn" onclick="saveNotes('${pid}')"><i class="ri-save-line"></i> Enregistrer</button></div>`; 
+function renderNotesTab(pid) {
+  const notes = getNotes(pid);
+  return `<div class="notes-area">
+    <textarea class="notes-textarea" id="notes-ta-${pid}" placeholder="Ajoutez vos notes, résumés, points importants..." aria-label="Notes">${escHtml(notes)}</textarea>
+    <button class="save-notes-btn" onclick="saveNotes('${pid}')">
+      <i class="ri-save-3-line"></i> Enregistrer les notes
+    </button>
+  </div>`;
 }
 
-function renderExercisesTab(pid) { 
-  const exs=getExercises(pid); 
-  return `<div class="exercises-area">${exs.length?exs.map((ex,i)=>`<div class="exercise-item"><div class="exercise-check ${ex.done?'done':''}" onclick="toggleExercise('${pid}',${i})">${ex.done?'<i class="ri-check-line"></i>':''}</div><div class="exercise-text" style="${ex.done?'text-decoration:line-through;opacity:0.5':''}">${escHtml(ex.text)}</div><button style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px" onclick="deleteExercise('${pid}',${i})" aria-label="Supprimer l'exercice"><i class="ri-delete-bin-line"></i></button></div>`).join(''):'<p style="font-size:13px;color:var(--text3);text-align:center;padding:16px">Aucun exercice</p>'}<div class="add-exercise-row"><input class="add-exercise-input" id="ex-input-${pid}" placeholder="Nouvel exercice..." onkeydown="if(event.key==='Enter')addExercise('${pid}')" aria-label="Nouvel exercice"/><button class="add-exercise-btn" onclick="addExercise('${pid}')"><i class="ri-add-line"></i></button></div></div>`; 
+function renderExercisesTab(pid) {
+  const exs = getExercises(pid);
+  const items = exs.length
+    ? exs.map((ex, i) => `
+        <div class="exercise-item ${ex.done ? 'done-item' : ''}">
+          <div class="exercise-check ${ex.done ? 'done' : ''}" onclick="toggleExercise('${pid}',${i})">
+            ${ex.done ? '<i class="ri-check-line"></i>' : ''}
+          </div>
+          <div class="exercise-text" style="${ex.done ? 'text-decoration:line-through;color:var(--text3)' : ''}">${escHtml(ex.text)}</div>
+          <button style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:18px;flex-shrink:0;padding:2px;transition:color 0.15s" onclick="deleteExercise('${pid}',${i})" aria-label="Supprimer">
+            <i class="ri-delete-bin-line"></i>
+          </button>
+        </div>`).join('')
+    : `<div style="text-align:center;padding:24px 0 16px;color:var(--text3)">
+        <i class="ri-checkbox-blank-circle-line" style="font-size:36px;display:block;margin-bottom:8px;opacity:0.4"></i>
+        <span style="font-size:13px">Aucun exercice ajouté</span>
+      </div>`;
+  return `<div class="exercises-area">
+    ${items}
+    <div class="add-exercise-row">
+      <input class="add-exercise-input" id="ex-input-${pid}" placeholder="Nouvel exercice..."
+        onkeydown="if(event.key==='Enter')addExercise('${pid}')" aria-label="Nouvel exercice"/>
+      <button class="add-exercise-btn" onclick="addExercise('${pid}')"><i class="ri-add-line"></i></button>
+    </div>
+  </div>`;
 }
 
-function renderReviewTab(pid) { 
-  const rc=getReviewCount(pid); 
-  return `<div class="review-section"><div class="review-count">Révisions : <strong>${rc}</strong></div><button class="review-btn" onclick="addReview('${pid}')"><i class="ri-restart-line"></i> Ajouter une révision</button></div>`; 
+function renderReviewTab(pid) {
+  const rc = getReviewCount(pid);
+  const stars = rc === 0 ? '' : rc < 3 ? '⭐' : rc < 6 ? '⭐⭐' : rc < 10 ? '⭐⭐⭐' : '⭐⭐⭐⭐';
+  return `<div>
+    <div class="review-hero">
+      <div class="review-hero-count">${rc}</div>
+      <div class="review-hero-label">Révision${rc !== 1 ? 's' : ''} effectuée${rc !== 1 ? 's' : ''}</div>
+      ${stars ? `<div class="review-hero-stars">${stars}</div>` : ''}
+    </div>
+    <button class="review-add-btn" onclick="addReview('${pid}')">
+      <i class="ri-restart-line"></i> Marquer une révision
+    </button>
+  </div>`;
 }
 
 function saveNotes(pid) { 
