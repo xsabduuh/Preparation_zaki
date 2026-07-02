@@ -467,8 +467,14 @@
 // ========== STORE ==========
 const LS = {
   get: (k, def) => { try { const v = localStorage.getItem(k); return v !== null ? JSON.parse(v) : def; } catch { return def; } },
-  set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+  set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch(e) { console.warn('Storage save failed:', e); return false; } }
 };
+// حفظ مع تنبيه فحالة الفشل (مثلا الذاكرة ممتلئة) بدل الفشل الصامت
+function persist(key, value, label) {
+  const ok = LS.set(key, value);
+  if (!ok) showToast('Erreur d\'enregistrement' + (label ? ' (' + label + ')' : '') + ' — mémoire pleine ?');
+  return ok;
+}
 const KEY_PROGRESS = 'prep_progress', KEY_NOTES = 'prep_notes', KEY_EXERCISES = 'prep_exercises', KEY_ACTIVITY = 'prep_activity';
 const KEY_TIMER = 'prep_timer', KEY_SCHEDULE = 'prep_schedule', KEY_THEME = 'prep_theme', KEY_WEEKLY_GOAL = 'prep_weekly_goal';
 const KEY_CUSTOM_PARTIALS = 'prep_custom_partials', KEY_SUBJECTS = 'prep_subjects_v3';
@@ -538,7 +544,7 @@ function initSubjects() {
 initSubjects();
 
 function getSubjects() { return LS.get(KEY_SUBJECTS, DEFAULT_SUBJECTS); }
-function saveSubjects(subjects) { LS.set(KEY_SUBJECTS, subjects); }
+function saveSubjects(subjects) { persist(KEY_SUBJECTS, subjects, 'modules'); }
 
 const ICON_OPTIONS = [
   'ri-book-line', 'ri-flashlight-line', 'ri-scan-line', 'ri-file-list-3-line', 'ri-flask-line', 'ri-file-text-line',
@@ -558,8 +564,22 @@ function subjMeta(id) { return getSubjects().find(s => s.id === id) || { icon: '
 
 // ========== CUSTOM PARTIALS & HELPERS ==========
 function getCustomPartials() { return LS.get(KEY_CUSTOM_PARTIALS, []); }
-function addCustomPartial(branchId, title) { const customs = getCustomPartials(); const id = 'custom-' + Date.now() + '-' + Math.random().toString(36).substr(2,5); customs.push({ id, branchId, title, createdAt: new Date().toISOString() }); LS.set(KEY_CUSTOM_PARTIALS, customs); return id; }
-function deleteCustomPartial(id) { const customs = getCustomPartials().filter(p => p.id !== id); LS.set(KEY_CUSTOM_PARTIALS, customs); }
+function addCustomPartial(branchId, title) { const customs = getCustomPartials(); const id = 'custom-' + Date.now() + '-' + Math.random().toString(36).substr(2,5); customs.push({ id, branchId, title, createdAt: new Date().toISOString() }); persist(KEY_CUSTOM_PARTIALS, customs, 'fiche'); return id; }
+function deleteCustomPartial(id) { const customs = getCustomPartials().filter(p => p.id !== id); persist(KEY_CUSTOM_PARTIALS, customs, 'suppression'); removeFromWeeklyGoal([id]); }
+
+// ✅ إصلاح: عند حذف فيشة، نحيدوها من objectif الأسبوعي إلا كانت مضافة فيه
+// (قبل هاد الإصلاح، النسبة ديال الهدف كانت تبقى محسوبة بفيشة محذوفة ومقدرش توصل 100% أبدا)
+function removeFromWeeklyGoal(ids) {
+  if (!ids || !ids.length) return;
+  const goal = LS.get(KEY_WEEKLY_GOAL, null);
+  if (!goal || !goal.partials) return;
+  const idSet = new Set(ids);
+  const filtered = goal.partials.filter(id => !idSet.has(id));
+  if (filtered.length !== goal.partials.length) {
+    goal.partials = filtered;
+    LS.set(KEY_WEEKLY_GOAL, goal);
+  }
+}
 
 function getAllPartials() {
   const subs = getSubjects();
@@ -585,7 +605,7 @@ function addBranchToSubject(subjectId, title) {
 }
 
 function getProgress() { return LS.get(KEY_PROGRESS, {}); }
-function setPartialProgress(pid, data) { const p = getProgress(); const e = p[pid] || {}; const m = {...e, ...data}; Object.keys(m).forEach(k => m[k]===undefined && delete m[k]); p[pid]=m; LS.set(KEY_PROGRESS, p); }
+function setPartialProgress(pid, data) { const p = getProgress(); const e = p[pid] || {}; const m = {...e, ...data}; Object.keys(m).forEach(k => m[k]===undefined && delete m[k]); p[pid]=m; persist(KEY_PROGRESS, p, 'progression'); }
 function isCompleted(pid) { return !!(getProgress()[pid]||{}).completed; }
 function getReviewCount(pid) { return (getProgress()[pid]||{}).reviewCount || 0; }
 function getNotes(pid) { return (LS.get(KEY_NOTES,{}))[pid]||''; }
@@ -626,7 +646,7 @@ function getWeekEnd(m) { const e=new Date(m); e.setDate(m.getDate()+7); return e
 function getWeekKey() { const m=getCurrentWeekMonday(); return `${m.getFullYear()}-${String(m.getMonth()+1).padStart(2,'0')}-${String(m.getDate()).padStart(2,'0')}`; }
 function formatDate(d) { return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`; }
 function getWeeklyGoal() { const g=LS.get(KEY_WEEKLY_GOAL,null); if(g&&g.weekMonday===getWeekKey()) return g; if(g) LS.set(KEY_WEEKLY_GOAL,null); return null; }
-function saveWeeklyGoal(ids) { LS.set(KEY_WEEKLY_GOAL,{weekMonday:getWeekKey(),startDate:getCurrentWeekMonday().toISOString(),endDate:getWeekEnd(getCurrentWeekMonday()).toISOString(),partials:ids}); }
+function saveWeeklyGoal(ids) { persist(KEY_WEEKLY_GOAL,{weekMonday:getWeekKey(),startDate:getCurrentWeekMonday().toISOString(),endDate:getWeekEnd(getCurrentWeekMonday()).toISOString(),partials:ids}, 'objectif'); }
 
 function calcGoalProgress(goal) {
   const {partials}=goal;
@@ -833,12 +853,16 @@ function renderListView() {
   }).join('') + `<button class="save-notes-btn" onclick="openSubjectModal()" style="margin-top:8px;width:100%"><i class="ri-add-line"></i> Ajouter un module</button>`;
 }
 
+let searchDebounceTimer = null;
 function onSearchInput(v) {
   searchQuery = v;
-  const resultsDiv = document.getElementById('subjects-results');
-  if (resultsDiv) {
-    resultsDiv.innerHTML = currentViewMode === 'folders' ? renderFoldersView() : renderListView();
-  }
+  clearTimeout(searchDebounceTimer);
+  searchDebounceTimer = setTimeout(() => {
+    const resultsDiv = document.getElementById('subjects-results');
+    if (resultsDiv) {
+      resultsDiv.innerHTML = currentViewMode === 'folders' ? renderFoldersView() : renderListView();
+    }
+  }, 120);
 }
 
 // ========== FOLDER VIEW - عرض الـ partials مباشرة داخل المودول ==========
@@ -912,7 +936,10 @@ function deleteModule(subjectId) {
   const subject = getSubjects().find(s => s.id === subjectId);
   if (subject) {
     const branchIds = new Set((subject.branches||[]).map(b => b.id));
-    LS.set(KEY_CUSTOM_PARTIALS, getCustomPartials().filter(p => !branchIds.has(p.branchId)));
+    // نجمعو كل الـ ids ديال الفيشات ديال هاد المودول قبل ما نمسحوها، باش نحيدوهم من الهدف الأسبوعي
+    const partialIds = getAllPartials().filter(p => branchIds.has(p.branchId)).map(p => p.id);
+    persist(KEY_CUSTOM_PARTIALS, getCustomPartials().filter(p => !branchIds.has(p.branchId)), 'suppression module');
+    removeFromWeeklyGoal(partialIds);
   }
   saveSubjects(getSubjects().filter(s => s.id !== subjectId));
   nav('subjects');
@@ -1084,7 +1111,8 @@ function switchTab(pid,tab) {
 function renderNotesTab(pid) {
   const notes = getNotes(pid);
   return `<div class="notes-area">
-    <textarea class="notes-textarea" id="notes-ta-${pid}" placeholder="Ajoutez vos notes, résumés, points importants..." aria-label="Notes">${escHtml(notes)}</textarea>
+    <textarea class="notes-textarea" id="notes-ta-${pid}" placeholder="Ajoutez vos notes, résumés, points importants..." aria-label="Notes"
+      oninput="scheduleAutoSaveNotes('${pid}', this.value)" onblur="autoSaveNotes('${pid}', this.value)">${escHtml(notes)}</textarea>
     <button class="save-notes-btn" onclick="saveNotes('${pid}')">
       <i class="ri-save-3-line"></i> Enregistrer les notes
     </button>
@@ -1133,9 +1161,19 @@ function renderReviewTab(pid) {
   </div>`;
 }
 
+let notesSaveTimers = {};
+function scheduleAutoSaveNotes(pid, value) {
+  clearTimeout(notesSaveTimers[pid]);
+  notesSaveTimers[pid] = setTimeout(() => { setNotes(pid, value); }, 500);
+}
+function autoSaveNotes(pid, value) {
+  clearTimeout(notesSaveTimers[pid]);
+  setNotes(pid, value);
+}
 function saveNotes(pid) { 
   const ta=document.getElementById('notes-ta-'+pid); 
   if(!ta) return; 
+  clearTimeout(notesSaveTimers[pid]);
   setNotes(pid,ta.value); 
   showToast('Notes enregistrées'); 
 }
@@ -1208,7 +1246,7 @@ function renderSchedule() {
   } 
   const allSubjects=getSubjects(); 
   const sessions=schedule[selectedDay]||[]; 
-  return `<div class="page-inner"><div class="section-title">Semaine en cours</div><div class="week-grid">${days.map(d=>`<div class="day-cell ${d.isToday?'today':''} ${d.key===selectedDay?'active':''} ${d.hasSessions?'has-sessions':''}" onclick="selectDay('${d.key}')"><div class="day-name">${d.dayName}</div><div class="day-num">${d.dayNum}</div><div class="day-dot"></div></div>`).join('')}</div><div class="session-add-card"><div class="session-add-title"><i class="ri-add-circle-line"></i> Ajouter une session</div><div class="session-add-row"><select class="session-select" id="sess-subj" aria-label="Module">${allSubjects.map(s=>`<option value="${s.id}">${s.title}</option>`).join('')}</select><input type="time" class="session-time-input" id="sess-time" value="09:00" aria-label="Heure"><input type="number" class="session-duration-input" id="sess-duration" placeholder="Heure" min="0.5" max="12" step="0.5" value="1" style="width:80px;" aria-label="Durée"></div><div style="margin-top:8px"><input type="text" class="add-exercise-input" id="sess-note" placeholder="Note optionnelle..." style="width:100%" aria-label="Note"></div><div style="margin-top:8px"><button class="session-add-submit" onclick="addSession()"><i class="ri-add-line"></i> Ajouter</button></div></div><div class="section-title">Sessions du jour</div><div class="sessions-container">${renderSessionsList(sessions)}</div></div>`; 
+  return `<div class="page-inner"><div class="section-title">Semaine en cours</div><div class="week-grid">${days.map(d=>`<div class="day-cell ${d.isToday?'today':''} ${d.key===selectedDay?'active':''} ${d.hasSessions?'has-sessions':''}" onclick="selectDay('${d.key}')"><div class="day-name">${d.dayName}</div><div class="day-num">${d.dayNum}</div><div class="day-dot"></div></div>`).join('')}</div><div class="session-add-card"><div class="session-add-title"><i class="ri-add-circle-line"></i> Ajouter une session</div><div class="session-add-row"><select class="session-select" id="sess-subj" aria-label="Module">${allSubjects.map(s=>`<option value="${s.id}">${escHtml(s.title)}</option>`).join('')}</select><input type="time" class="session-time-input" id="sess-time" value="09:00" aria-label="Heure"><input type="number" class="session-duration-input" id="sess-duration" placeholder="Heure" min="0.5" max="12" step="0.5" value="1" style="width:80px;" aria-label="Durée"></div><div style="margin-top:8px"><input type="text" class="add-exercise-input" id="sess-note" placeholder="Note optionnelle..." style="width:100%" aria-label="Note"></div><div style="margin-top:8px"><button class="session-add-submit" onclick="addSession()"><i class="ri-add-line"></i> Ajouter</button></div></div><div class="section-title">Sessions du jour</div><div class="sessions-container">${renderSessionsList(sessions)}</div></div>`; 
 }
 
 function renderSessionsList(sessions) { 
