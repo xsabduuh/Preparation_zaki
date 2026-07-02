@@ -10,6 +10,35 @@
   <link rel="manifest" id="pwa-manifest">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
+  <script>
+    /* ===== إصلاح مشكل الفراغ الأسود في الأسفل عند فتح التطبيق من الشاشة الرئيسية (iOS PWA) =====
+       السبب: عند standalone launch على iOS، الـ WebKit كيتأخر شوية باش يحسب الطول الحقيقي
+       للنافذة (خصوصا مع notch/home-indicator). حل CSS وحدو (100vh/100dvh) ماكيفيش دايما،
+       فكنحسبو الطول يدويا بـ JS ونعاود نحسبوه بعد اللانش. */
+    (function () {
+      function setAppHeight() {
+        var h = window.innerHeight;
+        document.documentElement.style.setProperty('--app-height', h + 'px');
+      }
+      setAppHeight();
+      window.addEventListener('resize', setAppHeight);
+      window.addEventListener('orientationchange', function () {
+        setTimeout(setAppHeight, 50);
+        setTimeout(setAppHeight, 300);
+      });
+      window.addEventListener('pageshow', setAppHeight);
+      document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) setAppHeight();
+      });
+      // إعادة الحساب عدة مرات بعد الإقلاع، لأن iOS كيتأخر أحيانا فحساب innerHeight الحقيقي
+      setTimeout(setAppHeight, 100);
+      setTimeout(setAppHeight, 300);
+      setTimeout(setAppHeight, 600);
+      setTimeout(setAppHeight, 1000);
+      document.addEventListener('DOMContentLoaded', setAppHeight);
+      window.addEventListener('load', setAppHeight);
+    })();
+  </script>
   <style>
     :root {
       --bg: #0f0f13; --bg2: #18181f; --bg3: #22222d; --border: #2e2e3a;
@@ -20,6 +49,7 @@
       --red: #ef4444; --red-light: rgba(239,68,68,0.12);
       --radius: 14px; --radius-sm: 8px; --nav-h: 64px; --header-h: 56px; --transition: 0.2s ease;
       --hero-end: #9c5cf5;
+      --app-height: 100dvh;
     }
     [data-theme="light"] {
       --bg: #f5f5fa; --bg2: #ffffff; --bg3: #ededf5; --border: #e0e0ea;
@@ -31,12 +61,28 @@
       --hero-end: #7c3aed;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; overflow: hidden; }
+    html, body {
+      height: 100%;
+      height: -webkit-fill-available;
+      overflow: hidden;
+      background: var(--bg);
+    }
     body {
       font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text);
       font-size: 15px; line-height: 1.5; transition: background var(--transition), color var(--transition); direction: ltr; text-align: left;
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      min-height: var(--app-height);
     }
-    #app { width: 100%; height: 100vh; height: 100dvh; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+    #app {
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
+      height: -webkit-fill-available;
+      height: var(--app-height);
+      display: flex; flex-direction: column; position: relative; overflow: hidden;
+      background: var(--bg);
+    }
     .header { height: calc(var(--header-h) + env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); gap: 10px; flex-shrink: 0; z-index: 10; }
     .header-title { flex: 1; font-weight: 700; font-size: 17px; color: var(--text); }
     .header-action { background: none; border: none; color: var(--text2); font-size: 22px; cursor: pointer; padding: 6px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.15s, color 0.15s, transform 0.1s; }
